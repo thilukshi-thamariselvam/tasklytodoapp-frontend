@@ -1,8 +1,14 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import MainLayout from './layouts/MainLayout';
+
 function App() {
   return (
-    <div>
-      <h1>Taskly-Todo</h1>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<MainLayout />}>
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
