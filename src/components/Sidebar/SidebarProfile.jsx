@@ -17,7 +17,7 @@ const SidebarProfile = () => {
           sx={{ 
             width: 32, 
             height: 32, 
-            backgroundColor: '#4A90E2', 
+            backgroundColor: '#8d6f59',
           }}
         >
           <User color="#FFFFFF" size={18} />

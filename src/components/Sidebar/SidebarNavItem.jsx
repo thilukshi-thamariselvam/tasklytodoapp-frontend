@@ -18,10 +18,10 @@ const SidebarNavItem = ({ icon: Icon, label, path }) => {
         py: 1,
         borderRadius: 1,
         cursor: 'pointer',
-        backgroundColor: isActive ? '#FCEAE8' : 'transparent', 
+        backgroundColor: isActive ? '#F3EDE7' : 'transparent', 
         color: isActive ? 'primary.main' : 'text.secondary', 
         '&:hover': {
-          backgroundColor: isActive ? '#FCEAE8' : 'rgba(0, 0, 0, 0.04)', 
+          backgroundColor: isActive ? '#F3EDE7' : 'rgba(0, 0, 0, 0.04)', 
         },
         transition: 'all 0.15s ease-in-out',
       }}

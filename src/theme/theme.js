@@ -3,27 +3,27 @@ import { createTheme } from '@mui/material/styles';
 export const theme = createTheme({
   palette: {
     primary: {
-      main: '#DC4C3E',   
+      main: '#9f7d64',
       contrastText: '#FFFFFF', 
     },
     background: {
       default: '#FFFFFF',  
-      paper: '#FAFAFA',    
+      paper: '#FAF9F7',    
     },
     text: {
-      primary: '#202020',   
+      primary: '#1A1410',   
       secondary: '#808080', 
     },
     divider: '#EEEEEE',   
   },
   typography: {
-    fontFamily: '"Inter", "Segoe UI", "San Francisco", sans-serif',
+    fontFamily: '"Poppins", "Inter", "Segoe UI", "San Francisco", sans-serif',
     h4: {
       fontWeight: 700,      
       fontSize: '1.75rem', 
     },
     body2: {
-      color: '#808080',    
+      color: '#282828',    
     },
   },
   components: {
@@ -36,7 +36,7 @@ export const theme = createTheme({
         },
         containedPrimary: {
           '&:hover': {
-            backgroundColor: '#C7413A', 
+            backgroundColor: '#5D4230', 
           },
         },
       },
