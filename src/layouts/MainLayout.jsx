@@ -1,6 +1,7 @@
 import { Box } from '@mui/material';
 import { Outlet } from 'react-router-dom';
 import SidebarNav from '../components/Sidebar/SidebarNav';
+import SidebarProfile from '../components/Sidebar/SidebarProfile';
 
 const MainLayout = () => {
     return (
@@ -20,6 +21,7 @@ const MainLayout = () => {
                 }}
             >
                 <Box sx={{ p: 2 }}>
+                    <SidebarProfile />
                     <SidebarNav /> 
                 </Box>
             </Box>
