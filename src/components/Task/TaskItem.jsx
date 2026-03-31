@@ -1,7 +1,19 @@
-import { Box, Typography, Checkbox, IconButton } from '@mui/material';
-import { CalendarDays, GripVertical, Pencil, MessageSquare, MoreHorizontal } from 'lucide-react';
+import { useState } from 'react';
+import {
+    Box, Typography, Checkbox, IconButton, Menu, MenuItem, Divider,
+    ListItemIcon, ListItemText
+} from '@mui/material';
+import {
+    CalendarDays, GripVertical, Pencil, MessageSquare, MoreHorizontal,
+    Trash2
+} from 'lucide-react';
+import { useDeleteTask } from '../../hooks/useTaskMutations';
 
 const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick }) => {
+
+    const [menuAnchor, setMenuAnchor] = useState(null);
+    const deleteTaskMutation = useDeleteTask();
+
     return (
         <Box
             onMouseEnter={onMouseEnter}
@@ -73,11 +85,58 @@ const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick }) 
                     <IconButton size="small" sx={{ color: 'text.secondary' }}>
                         <MessageSquare size={16} />
                     </IconButton>
-                    <IconButton size="small" sx={{ color: 'text.secondary' }}>
+                    <IconButton
+                        size="small"
+                        sx={{ color: 'text.secondary' }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setMenuAnchor(e.currentTarget);
+                        }}
+                    >
                         <MoreHorizontal size={16} />
                     </IconButton>
                 </Box>
             )}
+            <Menu
+                anchorEl={menuAnchor}
+                open={Boolean(menuAnchor)}
+                onClose={() => setMenuAnchor(null)}
+                slotProps={{
+                    paper: {
+                        sx: {
+                            width: 180,
+                            borderRadius: 2,
+                            boxShadow: 5, 
+                            mt: 0.5
+                        }
+                    }
+                }}
+            >
+                <MenuItem
+                    onClick={() => setMenuAnchor(null)}
+                >
+                    <ListItemText primary="Add comment" />
+                </MenuItem>
+
+                <Divider />
+
+                <MenuItem
+                    onClick={async () => {
+                        setMenuAnchor(null);
+                        try {
+                            await deleteTaskMutation.mutateAsync(task.id);
+                        } catch (error) {
+                            console.error("Delete failed", error);
+                        }
+                    }}
+                    sx={{ color: 'error.main' }}
+                >
+                    <ListItemIcon sx={{ color: 'error.main' }}>
+                        <Trash2 size={18} />
+                    </ListItemIcon>
+                    <ListItemText primary="Delete task" />
+                </MenuItem>
+            </Menu>
         </Box>
     );
 };
