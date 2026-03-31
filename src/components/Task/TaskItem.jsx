@@ -1,7 +1,7 @@
 import { Box, Typography, Checkbox, IconButton } from '@mui/material';
 import { CalendarDays, GripVertical, Pencil, MessageSquare, MoreHorizontal } from 'lucide-react';
 
-const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave }) => {
+const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick }) => {
     return (
         <Box
             onMouseEnter={onMouseEnter}
@@ -64,7 +64,7 @@ const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave }) => {
                     <IconButton size="small" sx={{ color: 'text.secondary' }}>
                         <GripVertical size={16} />
                     </IconButton>
-                    <IconButton size="small" sx={{ color: 'text.secondary' }}>
+                    <IconButton size="small" sx={{ color: 'text.secondary' }} onClick={onEditClick}>
                         <Pencil size={16} />
                     </IconButton>
                     <IconButton size="small" sx={{ color: 'text.secondary' }}>

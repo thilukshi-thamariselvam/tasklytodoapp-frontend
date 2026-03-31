@@ -3,10 +3,12 @@ import { CalendarPlus, Settings2 } from 'lucide-react';
 import { useState } from 'react';
 import { useTasks } from "../hooks/useTasks";
 import TaskItem from "../components/Task/TaskItem";
+import TaskInlineEditor from '../components/Task/TaskInlineEditor';
 
 const TodayPage = () => {
   const { data: tasks, isLoading, isError } = useTasks("1");
   const [hoveredTaskId, setHoveredTaskId] = useState(null);
+  const [editingTaskId, setEditingTaskId] = useState(null);
 
   const showEmptyState = !isLoading && !isError && tasks?.length === 0;
 
@@ -63,13 +65,22 @@ const TodayPage = () => {
       {tasks?.length > 0 && (
         <Box sx={{ flexGrow: 1 }}>
           {tasks.map((task) => (
-            <TaskItem
-              key={task.id}
-              task={task}
-              isHovered={hoveredTaskId === task.id}
-              onMouseEnter={() => setHoveredTaskId(task.id)}
-              onMouseLeave={() => setHoveredTaskId(null)}
-            />
+            editingTaskId === task.id ? (
+              <TaskInlineEditor
+                key={task.id}
+                task={task}
+                onCancel={() => setEditingTaskId(null)}
+              />
+            ) : (
+              <TaskItem
+                key={task.id}
+                task={task}
+                isHovered={hoveredTaskId === task.id}
+                onMouseEnter={() => setHoveredTaskId(task.id)}
+                onMouseLeave={() => setHoveredTaskId(null)}
+                onEditClick={() => setEditingTaskId(task.id)}
+              />
+            )
           ))}
         </Box>
       )}
