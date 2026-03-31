@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFormik } from 'formik';
+import { useQueryClient } from '@tanstack/react-query';
 import {
     Dialog, DialogContent, Box, TextField, IconButton,
     Button, Menu, MenuItem, ListItemIcon, ListItemText, Divider, Typography
@@ -15,6 +16,7 @@ import { createTask } from '../../api/taskApi';
 
 const AddTaskModal = () => {
     const dispatch = useDispatch();
+    const queryClient = useQueryClient();
     const isModalOpen = useSelector((state) => state.ui.isAddTaskModalOpen);
 
     const [anchorEl, setAnchorEl] = useState(null);
@@ -29,8 +31,8 @@ const AddTaskModal = () => {
         onSubmit: async (values, { setSubmitting }) => {
             try {
                 const payload = { ...values, userId: "1" };
-
                 await createTask(payload);
+                queryClient.invalidateQueries({ queryKey: ['tasks'] });
 
                 dispatch(closeAddTaskModal());
                 formik.resetForm();
@@ -150,7 +152,7 @@ const AddTaskModal = () => {
                             variant="contained"
                             onClick={formik.handleSubmit}
                             disabled={!formik.dirty || !formik.isValid || formik.isSubmitting}
-                            loading={formik.isSubmitting} 
+                            loading={formik.isSubmitting}
                             sx={{ textTransform: 'none' }}
                         >
                             Add task
