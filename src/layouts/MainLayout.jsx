@@ -6,6 +6,7 @@ import SidebarProfile from '../components/Sidebar/SidebarProfile';
 import SidebarNav from '../components/Sidebar/SidebarNav';
 import SidebarProjects from '../components/Sidebar/SidebarProjects';
 import SidebarFooter from '../components/Sidebar/SidebarFooter';
+import AddTaskModal from '../components/Modal/AddTaskModal';
 
 const MainLayout = () => {
 
@@ -22,7 +23,7 @@ const MainLayout = () => {
                     width: isSidebarOpen ? '300px' : '0px',
                     minWidth: isSidebarOpen ? '300px' : '0px',
                     backgroundColor: 'background.paper',
-                    borderRight: isSidebarOpen ? '1px solid' : 'none',                    
+                    borderRight: isSidebarOpen ? '1px solid' : 'none',
                     transition: 'width 0.25s ease-in-out, min-width 0.25s ease-in-out',
                     borderColor: 'divider',
                     display: 'flex',
@@ -66,7 +67,7 @@ const MainLayout = () => {
                 )}
                 <Outlet />
             </Box>
-
+            <AddTaskModal />
         </Box>
     );
 };
