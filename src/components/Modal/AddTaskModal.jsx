@@ -13,6 +13,7 @@ import {
 import { closeAddTaskModal } from '../../store/slices/uiSlice';
 import { taskSchema } from '../../validation/taskSchema';
 import { createTask } from '../../api/taskApi';
+import DatePickerPopover from '../Date/DatePickerPopover';
 
 const AddTaskModal = () => {
     const dispatch = useDispatch();
@@ -96,7 +97,10 @@ const AddTaskModal = () => {
                 />
 
                 <Box sx={{ display: 'flex', gap: 1, mt: 2, mb: 1 }}>
-                    <Button size="small" startIcon={<CalendarDays size={16} />} variant="outlined" sx={{ textTransform: 'none' }}>Today</Button>
+                    <DatePickerPopover
+                        value={formik.values.dueDate}
+                        onChange={(val) => formik.setFieldValue('dueDate', val)}
+                    />
                     <Button size="small" startIcon={<Paperclip size={16} />} variant="outlined" sx={{ textTransform: 'none' }}>Attachment</Button>
                     <Button size="small" startIcon={<Flag size={16} />} variant="outlined" sx={{ textTransform: 'none' }}>Priority</Button>
                     <Button size="small" startIcon={<Bell size={16} />} variant="outlined" sx={{ textTransform: 'none' }}>Reminders</Button>
@@ -115,7 +119,7 @@ const AddTaskModal = () => {
                     anchorEl={anchorEl}
                     open={Boolean(anchorEl)}
                     onClose={() => setAnchorEl(null)}
-                    PaperProps={{ sx: { width: 220, borderRadius: 2, boxShadow: 5 } }} // Heavy shadow as per spec
+                    PaperProps={{ sx: { width: 220, borderRadius: 2, boxShadow: 5 } }}
                 >
                     <MenuItem onClick={() => setAnchorEl(null)}>
                         <ListItemIcon><AtSign size={18} /></ListItemIcon>
