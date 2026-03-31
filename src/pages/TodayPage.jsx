@@ -1,16 +1,39 @@
-import { Box, Typography, Button, IconButton, Tooltip, CircularProgress } from '@mui/material';
-import { CalendarPlus, Settings2 } from 'lucide-react';
 import { useState } from 'react';
+import { Box, Typography, Button, IconButton, Tooltip, CircularProgress, Divider } from '@mui/material';
+import { CalendarPlus, Settings2, ChevronDown } from 'lucide-react';
+import dayjs from 'dayjs';
 import { useTasks } from "../hooks/useTasks";
 import TaskItem from "../components/Task/TaskItem";
-import TaskInlineEditor from '../components/Task/TaskInlineEditor';
+import TaskInlineEditor from "../components/Task/TaskInlineEditor";
+import { groupTasksByDate } from "../utils/taskUtils";
 
 const TodayPage = () => {
   const { data: tasks, isLoading, isError } = useTasks("1");
   const [hoveredTaskId, setHoveredTaskId] = useState(null);
   const [editingTaskId, setEditingTaskId] = useState(null);
 
+  const groupedTasks = tasks ? groupTasksByDate(tasks) : { overdue: [], today: [], upcoming: [], noDate: [] };
+
   const showEmptyState = !isLoading && !isError && tasks?.length === 0;
+
+  const renderTaskRow = (task) => (
+    editingTaskId === task.id ? (
+      <TaskInlineEditor
+        key={task.id}
+        task={task}
+        onCancel={() => setEditingTaskId(null)}
+      />
+    ) : (
+      <TaskItem
+        key={task.id}
+        task={task}
+        isHovered={hoveredTaskId === task.id}
+        onMouseEnter={() => setHoveredTaskId(task.id)}
+        onMouseLeave={() => setHoveredTaskId(null)}
+        onEditClick={() => setEditingTaskId(task.id)}
+      />
+    )
+  );
 
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -40,7 +63,6 @@ const TodayPage = () => {
           <CircularProgress />
         </Box>
       )}
-
       {isError && (
         <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Typography color="error">Failed to load tasks.</Typography>
@@ -64,24 +86,41 @@ const TodayPage = () => {
 
       {tasks?.length > 0 && (
         <Box sx={{ flexGrow: 1 }}>
-          {tasks.map((task) => (
-            editingTaskId === task.id ? (
-              <TaskInlineEditor
-                key={task.id}
-                task={task}
-                onCancel={() => setEditingTaskId(null)}
-              />
-            ) : (
-              <TaskItem
-                key={task.id}
-                task={task}
-                isHovered={hoveredTaskId === task.id}
-                onMouseEnter={() => setHoveredTaskId(task.id)}
-                onMouseLeave={() => setHoveredTaskId(null)}
-                onEditClick={() => setEditingTaskId(task.id)}
-              />
-            )
-          ))}
+
+          {groupedTasks.overdue.length > 0 && (
+            <Box sx={{ mb: 4 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <ChevronDown size={18} />
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'text.primary' }}>Overdue</Typography>
+                </Box>
+                <Button size="small" sx={{ color: 'error.main', textTransform: 'none', fontSize: '0.8rem', fontWeight: 600 }}>
+                  Reschedule
+                </Button>
+              </Box>
+              <Divider sx={{ mb: 1 }} />
+              {groupedTasks.overdue.map(renderTaskRow)}
+            </Box>
+          )}
+
+          <Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+              <ChevronDown size={18} />
+              <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'text.primary' }}>
+                {dayjs().format('DD MMM')} · Today · {dayjs().format('dddd')}
+              </Typography>
+            </Box>
+
+            <Button
+              size="small"
+              sx={{ color: 'text.secondary', textTransform: 'none', pl: 1, mb: 1, fontSize: '0.85rem' }}
+            >
+              + Add task
+            </Button>
+
+            {groupedTasks.today.map(renderTaskRow)}
+          </Box>
+
         </Box>
       )}
 
