@@ -2,6 +2,7 @@ import { Box, TextField, Button, Chip, IconButton } from '@mui/material';
 import { X, CalendarDays } from 'lucide-react';
 import { useFormik } from 'formik';
 import { useUpdateTask } from '../../hooks/useTaskMutations';
+import PriorityPopover from '../Priority/PriorityPopover';
 
 const TaskInlineEditor = ({ task, onCancel }) => {
     const updateTaskMutation = useUpdateTask();
@@ -10,6 +11,7 @@ const TaskInlineEditor = ({ task, onCancel }) => {
         initialValues: {
             title: task.title,
             description: task.description || '',
+            priority: task.priority || 'LOW',
         },
         onSubmit: async (values, { setSubmitting }) => {
             try {
@@ -62,12 +64,15 @@ const TaskInlineEditor = ({ task, onCancel }) => {
                     <Chip
                         icon={<CalendarDays size={14} />}
                         label={task.dueDate}
-                        onDelete={onCancel} // Simplified for now
+                        onDelete={onCancel}
                         sx={{ color: '#D32F2F', border: '1px solid #EF9A9A', backgroundColor: 'transparent' }}
                     />
                 )}
 
-                <Button size="small" sx={{ textTransform: 'none', color: 'text.secondary', fontSize: '0.8rem' }}>Priority</Button>
+                <PriorityPopover
+                    value={formik.values.priority}
+                    onChange={(val) => formik.setFieldValue('priority', val)}
+                />
                 <Button size="small" sx={{ textTransform: 'none', color: 'text.secondary', fontSize: '0.8rem' }}>Reminders</Button>
             </Box>
 
