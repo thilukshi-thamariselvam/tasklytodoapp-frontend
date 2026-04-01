@@ -7,12 +7,17 @@ export const groupTasksByDate = (tasks) => {
     overdue: [],
     today: [],
     upcoming: [],
-    noDate: [], 
+    noDate: [],
   };
 
   if (!tasks || tasks.length === 0) return groupedTasks;
 
   tasks.forEach((task) => {
+    if (task.status === 'COMPLETED') {
+      groupedTasks.noDate.push(task);
+      return;
+    }
+
     if (!task.dueDate) {
       groupedTasks.noDate.push(task);
       return;
