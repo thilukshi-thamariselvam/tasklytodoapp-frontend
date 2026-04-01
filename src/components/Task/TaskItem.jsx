@@ -7,7 +7,7 @@ import {
     CalendarDays, GripVertical, Pencil, MessageSquare, MoreHorizontal,
     Trash2
 } from 'lucide-react';
-import { useDeleteTask } from '../../hooks/useTaskMutations';
+import { useDeleteTask, useUpdateTask } from '../../hooks/useTaskMutations';
 import { useNavigate } from 'react-router-dom';
 import { useCompleteTask } from '../../hooks/useCompleteTask';
 
@@ -23,6 +23,7 @@ const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick }) 
 
     const [menuAnchor, setMenuAnchor] = useState(null);
     const deleteTaskMutation = useDeleteTask();
+    const updateTaskMutation = useUpdateTask();
     const navigate = useNavigate();
     const completeTaskMutation = useCompleteTask();
 
@@ -62,6 +63,15 @@ const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick }) 
                             navigate('/completed');
                         } catch (error) {
                             console.error("Failed to complete task:", error);
+                        }
+                    } else {
+                        try {
+                            await updateTaskMutation.mutateAsync({
+                                taskId: task.id,
+                                data: { status: 'PENDING' }
+                            });
+                        } catch (error) {
+                            console.error("Failed to reopen task:", error);
                         }
                     }
                 }}
