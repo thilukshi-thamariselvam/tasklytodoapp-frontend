@@ -21,7 +21,6 @@ export const useUpdateTask = () => {
   });
 };
 
-// Hook for deleting tasks (Used by Three Dots menu)
 export const useDeleteTask = () => {
   const queryClient = useQueryClient();
   return useMutation({
