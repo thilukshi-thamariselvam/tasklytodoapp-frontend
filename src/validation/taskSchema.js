@@ -18,5 +18,9 @@ export const taskSchema = Yup.object().shape({
         })
         .nullable(),
 
+    priority: Yup.string()
+        .oneOf(['LOW', 'MEDIUM', 'HIGH', 'URGENT'], 'Invalid priority')
+        .default('LOW'),
+
     projectName: Yup.string().default('Inbox'),
 });

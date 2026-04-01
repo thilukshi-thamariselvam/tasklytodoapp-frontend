@@ -14,6 +14,7 @@ import { closeAddTaskModal } from '../../store/slices/uiSlice';
 import { taskSchema } from '../../validation/taskSchema';
 import { createTask } from '../../api/taskApi';
 import DatePickerPopover from '../Date/DatePickerPopover';
+import PriorityPopover from '../Priority/PriorityPopover';
 
 const AddTaskModal = () => {
     const dispatch = useDispatch();
@@ -102,7 +103,10 @@ const AddTaskModal = () => {
                         onChange={(val) => formik.setFieldValue('dueDate', val)}
                     />
                     <Button size="small" startIcon={<Paperclip size={16} />} variant="outlined" sx={{ textTransform: 'none' }}>Attachment</Button>
-                    <Button size="small" startIcon={<Flag size={16} />} variant="outlined" sx={{ textTransform: 'none' }}>Priority</Button>
+                    <PriorityPopover
+                        value={formik.values.priority}
+                        onChange={(val) => formik.setFieldValue('priority', val)}
+                    />
                     <Button size="small" startIcon={<Bell size={16} />} variant="outlined" sx={{ textTransform: 'none' }}>Reminders</Button>
 
                     <IconButton
