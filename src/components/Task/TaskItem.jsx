@@ -8,6 +8,8 @@ import {
     Trash2
 } from 'lucide-react';
 import { useDeleteTask } from '../../hooks/useTaskMutations';
+import { useNavigate } from 'react-router-dom';
+import { useCompleteTask } from '../../hooks/useCompleteTask';
 
 
 const priorityStyles = {
@@ -21,6 +23,8 @@ const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick }) 
 
     const [menuAnchor, setMenuAnchor] = useState(null);
     const deleteTaskMutation = useDeleteTask();
+    const navigate = useNavigate();
+    const completeTaskMutation = useCompleteTask();
 
     return (
         <Box
@@ -50,9 +54,19 @@ const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick }) 
                         <path d="M8 12l2 2 4 4" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                 }
+                onChange={async (e) => {
+                    if (e.target.checked) {
+                        try {
+                            await completeTaskMutation.mutateAsync(task.id);
+                            navigate('/completed');
+                        } catch (error) {
+                            console.error("Failed to complete task:", error);
+                        }
+                    }
+                }}
                 sx={{
                     p: 0.5,
-                    borderRadius: '50%', 
+                    borderRadius: '50%',
                     color: priorityStyles[task.priority]?.border || '#E0E0E0',
                     backgroundColor: priorityStyles[task.priority]?.bg || 'transparent',
                     transition: 'all 0.2s ease-in-out',
@@ -60,10 +74,7 @@ const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick }) 
                         color: priorityStyles[task.priority]?.border || '#9E9E9E',
                         backgroundColor: priorityStyles[task.priority]?.bg || 'transparent',
                     },
-                    '& .MuiCheckbox-root': {
-                        padding: 0,
-                        margin: 0,
-                    },
+                    '& .MuiCheckbox-root': { padding: 0, margin: 0 },
                     '&:hover': {
                         backgroundColor: priorityStyles[task.priority]?.hoverBg || 'rgba(0, 0, 0, 0.04)',
                     }
