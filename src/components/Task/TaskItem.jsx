@@ -9,6 +9,14 @@ import {
 } from 'lucide-react';
 import { useDeleteTask } from '../../hooks/useTaskMutations';
 
+
+const priorityStyles = {
+    URGENT: { border: '#D32F2F', bg: 'rgba(211, 47, 47, 0.1)', hoverBg: 'rgba(211, 47, 47, 0.25)' },
+    HIGH: { border: '#FF9800', bg: 'rgba(255, 152, 0, 0.1)', hoverBg: 'rgba(255, 152, 0, 0.25)' },
+    MEDIUM: { border: '#1976D2', bg: 'rgba(25, 118, 210, 0.1)', hoverBg: 'rgba(25, 118, 210, 0.25)' },
+    LOW: { border: '#E0E0E0', bg: 'transparent', hoverBg: 'rgba(0, 0, 0, 0.04)' },
+};
+
 const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick }) => {
 
     const [menuAnchor, setMenuAnchor] = useState(null);
@@ -31,16 +39,44 @@ const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick }) 
             }}
         >
             <Checkbox
-                sx={{ mt: -0.5, color: 'text.secondary', '&.Mui-checked': { color: 'primary.main' } }}
+                icon={
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                    </svg>
+                }
+                checkedIcon={
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" fill="currentColor" stroke="currentColor" strokeWidth="2" />
+                        <path d="M8 12l2 2 4 4" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                }
+                sx={{
+                    p: 0.5,
+                    borderRadius: '50%', 
+                    color: priorityStyles[task.priority]?.border || '#E0E0E0',
+                    backgroundColor: priorityStyles[task.priority]?.bg || 'transparent',
+                    transition: 'all 0.2s ease-in-out',
+                    '&.Mui-checked': {
+                        color: priorityStyles[task.priority]?.border || '#9E9E9E',
+                        backgroundColor: priorityStyles[task.priority]?.bg || 'transparent',
+                    },
+                    '& .MuiCheckbox-root': {
+                        padding: 0,
+                        margin: 0,
+                    },
+                    '&:hover': {
+                        backgroundColor: priorityStyles[task.priority]?.hoverBg || 'rgba(0, 0, 0, 0.04)',
+                    }
+                }}
             />
 
-            <Box sx={{ flexGrow: 1 }}>
+            <Box sx={{ flexGrow: 1, pl: 4 }}>
                 <Typography variant="body1" sx={{ fontWeight: 500, color: 'text.primary', lineHeight: 1.3 }}>
                     {task.title}
                 </Typography>
 
                 {task.description && (
-                    <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5, fontSize: '0.85rem' }}>
+                    <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.25, fontSize: '0.85rem' }}>
                         {task.description}
                     </Typography>
                 )}
@@ -106,7 +142,7 @@ const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick }) 
                         sx: {
                             width: 180,
                             borderRadius: 2,
-                            boxShadow: 5, 
+                            boxShadow: 5,
                             mt: 0.5
                         }
                     }
