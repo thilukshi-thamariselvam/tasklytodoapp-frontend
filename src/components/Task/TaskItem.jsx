@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import {
     Box, Typography, Checkbox, IconButton, Menu, MenuItem, Divider,
-    ListItemIcon, ListItemText, Collapse
+    ListItemIcon, ListItemText, Collapse, Dialog, DialogTitle,
+    DialogContent, DialogContentText, DialogActions, Button
 } from '@mui/material';
 import {
     CalendarDays, GripVertical, Pencil, MessageSquare, MoreHorizontal,
@@ -23,7 +24,9 @@ const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick }) 
 
     const [menuAnchor, setMenuAnchor] = useState(null);
     const [isExpanded, setIsExpanded] = useState(false);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const updateTaskMutation = useUpdateTask();
+    const deleteTaskMutation = useDeleteTask();
     const navigate = useNavigate();
     const completeTaskMutation = useCompleteTask();
 
@@ -261,13 +264,9 @@ const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick }) 
                 <Divider />
 
                 <MenuItem
-                    onClick={async () => {
+                    onClick={() => {
                         setMenuAnchor(null);
-                        try {
-                            await deleteTaskMutation.mutateAsync(task.id);
-                        } catch (error) {
-                            console.error("Delete failed", error);
-                        }
+                        setIsDeleteDialogOpen(true);
                     }}
                     sx={{ color: 'error.main' }}
                 >
@@ -277,6 +276,41 @@ const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick }) 
                     <ListItemText primary="Delete task" />
                 </MenuItem>
             </Menu>
+            <Dialog
+                open={isDeleteDialogOpen}
+                onClose={() => setIsDeleteDialogOpen(false)}
+                PaperProps={{ sx: { borderRadius: 2, p: 1 } }}
+            >
+                <DialogTitle sx={{ fontWeight: 600 }}>Delete Task?</DialogTitle>
+                <DialogContent>
+                    <DialogContentText sx={{ color: 'text.secondary' }}>
+                        Are you sure you want to delete <strong>"{task.title}"</strong>?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions sx={{ px: 3, pb: 2 }}>
+                    <Button
+                        onClick={() => setIsDeleteDialogOpen(false)}
+                        sx={{ textTransform: 'none' }}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={async () => {
+                            setIsDeleteDialogOpen(false);
+                            try {
+                                await deleteTaskMutation.mutateAsync(task.id);
+                            } catch (error) {
+                                console.error("Delete failed", error);
+                            }
+                        }}
+                        variant="contained"
+                        color="error"
+                        sx={{ textTransform: 'none' }}
+                    >
+                        Yes, Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };
