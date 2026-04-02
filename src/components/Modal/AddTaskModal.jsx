@@ -11,6 +11,7 @@ import {
     AtSign, MapPin, Puzzle, Settings, Plus, X
 } from 'lucide-react';
 import { closeAddTaskModal } from '../../store/slices/uiSlice';
+import { useLabels } from '../../hooks/useLabels';
 import { taskSchema } from '../../validation/taskSchema';
 import { createTask } from '../../api/taskApi';
 import DatePickerPopover from '../Date/DatePickerPopover';
@@ -23,6 +24,7 @@ const AddTaskModal = () => {
 
     const [anchorEl, setAnchorEl] = useState(null);
     const [subtaskInput, setSubtaskInput] = useState('');
+    const { data: labels = [] } = useLabels("1");
 
     const formik = useFormik({
         initialValues: {
@@ -30,11 +32,12 @@ const AddTaskModal = () => {
             description: '',
             projectName: 'Inbox',
             subtaskTitles: [],
+            labelIds: [],
         },
         validationSchema: taskSchema,
         onSubmit: async (values, { setSubmitting }) => {
             try {
-                const payload = { ...values, userId: "1" };
+                const payload = { ...values, userId: "1", labelIds: values.labelIds };
                 await createTask(payload);
                 queryClient.invalidateQueries({ queryKey: ['tasks'] });
 
@@ -59,6 +62,16 @@ const AddTaskModal = () => {
     const handleRemoveSubtask = (indexToRemove) => {
         formik.setFieldValue('subtaskTitles',
             formik.values.subtaskTitles.filter((_, index) => index !== indexToRemove)
+        );
+    };
+
+    const handleToggleLabel = (labelId) => {
+        const currentIds = formik.values.labelIds || [];
+        const isSelected = currentIds.includes(labelId);
+        formik.setFieldValue('labelIds',
+            isSelected
+                ? currentIds.filter(id => id !== labelId)
+                : [...currentIds, labelId]
         );
     };
 
@@ -158,6 +171,32 @@ const AddTaskModal = () => {
                         </Box>
                     )}
                 </Box>
+                
+                {formik.values.labelIds?.length > 0 && (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1, mb: 1 }}>
+                        {formik.values.labelIds.map(id => {
+                            const label = labels.find(l => l.id === id);
+                            if (!label) return null;
+                            return (
+                                <Chip
+                                    key={id}
+                                    label={label.name}
+                                    size="small"
+                                    onDelete={() => handleToggleLabel(id)}
+                                    deleteIcon={<X size={14} />}
+                                    icon={<Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: label.color, ml: 0.5 }} />}
+                                    sx={{
+                                        fontSize: '0.8rem',
+                                        bgcolor: `${label.color}15`,
+                                        color: label.color,
+                                        borderColor: label.color,
+                                        '& .MuiChip-deleteIcon': { color: label.color }
+                                    }}
+                                />
+                            );
+                        })}
+                    </Box>
+                )}
 
 
                 <Box sx={{ display: 'flex', gap: 1, mt: 2, mb: 1 }}>
@@ -188,11 +227,31 @@ const AddTaskModal = () => {
                     onClose={() => setAnchorEl(null)}
                     PaperProps={{ sx: { width: 220, borderRadius: 2, boxShadow: 5 } }}
                 >
-                    <MenuItem onClick={() => setAnchorEl(null)}>
+                    <MenuItem disabled sx={{ opacity: 0.7 }}>
                         <ListItemIcon><AtSign size={18} /></ListItemIcon>
                         <ListItemText primary="Labels" />
-                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>@</Typography>
                     </MenuItem>
+                    {labels.map((label) => {
+                        const isSelected = formik.values.labelIds?.includes(label.id);
+                        return (
+                            <MenuItem
+                                key={label.id}
+                                onClick={() => handleToggleLabel(label.id)}
+                                sx={{ pl: 5 }}
+                            >
+                                <ListItemIcon sx={{ minWidth: 24 }}>
+                                    <Box
+                                        sx={{
+                                            width: 14, height: 14, borderRadius: '50%',
+                                            bgcolor: isSelected ? label.color : 'transparent',
+                                            border: `2px solid ${label.color}`
+                                        }}
+                                    />
+                                </ListItemIcon>
+                                <ListItemText primary={label.name} primaryTypographyProps={{ fontSize: '0.85rem' }} />
+                            </MenuItem>
+                        );
+                    })}
                     <MenuItem onClick={() => setAnchorEl(null)}>
                         <ListItemIcon><MapPin size={18} sx={{ color: '#FFA726' }} /></ListItemIcon>
                         <ListItemText primary="Location" />
