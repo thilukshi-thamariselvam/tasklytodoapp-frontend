@@ -1,14 +1,18 @@
-import { Box, TextField, Button, Chip, IconButton } from '@mui/material';
+import {
+    Box, TextField, Button, Chip, IconButton, Typography
+} from '@mui/material';
 import { X, CalendarDays, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { useFormik } from 'formik';
 import { useUpdateTask } from '../../hooks/useTaskMutations';
 import PriorityPopover from '../Priority/PriorityPopover';
 import DatePickerPopover from '../Date/DatePickerPopover';
+import { useLabels } from '../../hooks/useLabels';
 
 const TaskInlineEditor = ({ task, onCancel }) => {
     const updateTaskMutation = useUpdateTask();
     const [subtaskInput, setSubtaskInput] = useState('');
+    const { data: labels = [] } = useLabels("1");
 
     const formik = useFormik({
         initialValues: {
@@ -17,6 +21,7 @@ const TaskInlineEditor = ({ task, onCancel }) => {
             priority: task.priority || 'LOW',
             dueDate: task.dueDate || null,
             subtaskTitles: task.subtasks?.map(s => s.title) || [],
+            labelIds: task.labels?.map(l => l.id) || [],
         },
         onSubmit: async (values, { setSubmitting }) => {
             try {
@@ -90,6 +95,41 @@ const TaskInlineEditor = ({ task, onCancel }) => {
                 />
                 <Button size="small" sx={{ textTransform: 'none', color: 'text.secondary', fontSize: '0.8rem' }}>Reminders</Button>
             </Box>
+
+            {labels.length > 0 && (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {labels.map((label) => {
+                        const isSelected = formik.values.labelIds?.includes(label.id);
+                        return (
+                            <Box
+                                key={label.id}
+                                onClick={() => {
+                                    const currentIds = formik.values.labelIds || [];
+                                    const newIds = isSelected
+                                        ? currentIds.filter(id => id !== label.id)
+                                        : [...currentIds, label.id];
+                                    formik.setFieldValue('labelIds', newIds);
+                                }}
+                                sx={{
+                                    display: 'flex', alignItems: 'center', gap: 0.5,
+                                    px: 1.5, py: 0.5, borderRadius: 1,
+                                    border: '1px solid',
+                                    borderColor: isSelected ? label.color : 'divider',
+                                    bgcolor: isSelected ? `${label.color}15` : 'transparent',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.15s ease',
+                                    '&:hover': { bgcolor: `${label.color}25` }
+                                }}
+                            >
+                                <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: label.color }} />
+                                <Typography variant="caption" sx={{ fontSize: '0.75rem', color: isSelected ? label.color : 'text.secondary', fontWeight: isSelected ? 600 : 400 }}>
+                                    {label.name}
+                                </Typography>
+                            </Box>
+                        );
+                    })}
+                </Box>
+            )}
 
             <Box sx={{ mt: 1.5 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
