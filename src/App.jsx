@@ -5,6 +5,7 @@ import InboxPage from './pages/InboxPage';
 import CompletedPage from './pages/CompletedPage';
 import TaskDetailPage from './pages/TaskDetailPage';
 import SearchPage from './pages/SearchPage';
+import UpcomingPage from './pages/UpcomingPage';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="completed" element={<CompletedPage />} />
           <Route path="tasks/:taskId" element={<TaskDetailPage />} />
           <Route path="search" element={<SearchPage />} />
+          <Route path="upcoming" element={<UpcomingPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
