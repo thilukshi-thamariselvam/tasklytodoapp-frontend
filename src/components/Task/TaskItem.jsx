@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import {
     Box, Typography, Checkbox, IconButton, Menu, MenuItem, Divider,
-    ListItemIcon, ListItemText
+    ListItemIcon, ListItemText, Collapse
 } from '@mui/material';
 import {
     CalendarDays, GripVertical, Pencil, MessageSquare, MoreHorizontal,
-    Trash2
+    Trash2, ChevronDown
 } from 'lucide-react';
 import { useDeleteTask, useUpdateTask } from '../../hooks/useTaskMutations';
 import { useNavigate } from 'react-router-dom';
@@ -22,7 +22,7 @@ const priorityStyles = {
 const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick }) => {
 
     const [menuAnchor, setMenuAnchor] = useState(null);
-    const deleteTaskMutation = useDeleteTask();
+    const [isExpanded, setIsExpanded] = useState(false);
     const updateTaskMutation = useUpdateTask();
     const navigate = useNavigate();
     const completeTaskMutation = useCompleteTask();
@@ -121,54 +121,69 @@ const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick }) 
                         </Typography>
                     )}
                 </Box>
-                {task.subtasks?.length > 0 && (
-                    <Box sx={{ mt: 1.5, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                        {task.subtasks.map((subtask) => (
-                            <Box
-                                key={subtask.id}
-                                sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-                            >
-                                <Checkbox
-                                    checked={subtask.status === 'COMPLETED'}
-                                    onChange={(e) => {
-                                        updateTaskMutation.mutateAsync({
-                                            taskId: subtask.id,
-                                            data: { status: e.target.checked ? 'COMPLETED' : 'PENDING' }
-                                        });
-                                    }}
-                                    icon={
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
-                                        </svg>
-                                    }
-                                    checkedIcon={
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <circle cx="12" cy="12" r="10" fill="currentColor" stroke="currentColor" strokeWidth="2" />
-                                            <path d="M7.5 12.5l3 3 6-6" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                                        </svg>
-                                    }
-                                    sx={{
-                                        p: 0.25,
-                                        color: 'text.secondary',
-                                        '&.Mui-checked': { color: 'text.secondary' }
-                                    }}
-                                />
-                                <Typography
-                                    variant="body2"
-                                    sx={{
-                                        fontSize: '0.85rem',
-                                        color: subtask.status === 'COMPLETED' ? 'text.disabled' : 'text.secondary',
-                                        textDecoration: subtask.status === 'COMPLETED' ? 'line-through' : 'none',
-                                        transition: 'all 0.2s ease'
-                                    }}
-                                >
-                                    {subtask.title}
-                                </Typography>
-                            </Box>
-                        ))}
-                    </Box>
-                )}
             </Box>
+
+            <Collapse in={isExpanded} timeout={300} unmountOnExit>
+                <Box
+                    sx={{
+                        mt: 1,
+                        ml: 7,
+                        mr: 1,
+                        p: 1.5,
+                        backgroundColor: 'grey.50',
+                        borderRadius: 1.5,
+                        border: '1px solid',
+                        borderColor: 'divider'
+                    }}
+                >
+                    <Box sx={{ display: 'flex', gap: 2, mb: 1.5 }}>
+                        <Typography variant="caption" sx={{ color: 'text.disabled', fontWeight: 500 }}>
+                            Created: {new Date(task.createdAt).toLocaleDateString('en-US', {
+                                month: 'short', day: 'numeric', year: 'numeric'
+                            })}
+                        </Typography>
+                    </Box>
+                    {task.subtasks?.length > 0 ? (
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                            <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.primary', mb: 0.5 }}>
+                                Subtasks ({task.subtasks.filter(s => s.status === 'COMPLETED').length}/{task.subtasks.length})
+                            </Typography>
+                            {task.subtasks.map((subtask) => (
+                                <Box key={subtask.id} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <Checkbox
+                                        checked={subtask.status === 'COMPLETED'}
+                                        onChange={(e) => {
+                                            updateTaskMutation.mutateAsync({
+                                                taskId: subtask.id,
+                                                data: { status: e.target.checked ? 'COMPLETED' : 'PENDING' }
+                                            });
+                                        }}
+                                        icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /></svg>}
+                                        checkedIcon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="currentColor" stroke="currentColor" strokeWidth="2" /><path d="M7.5 12.5l3 3 6-6" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+                                        sx={{ p: 0.25, color: 'text.secondary', '&.Mui-checked': { color: 'text.secondary' } }}
+                                    />
+                                    <Typography
+                                        variant="body2"
+                                        sx={{
+                                            fontSize: '0.85rem',
+                                            color: subtask.status === 'COMPLETED' ? 'text.disabled' : 'text.secondary',
+                                            textDecoration: subtask.status === 'COMPLETED' ? 'line-through' : 'none',
+                                            transition: 'all 0.2s ease'
+                                        }}
+                                    >
+                                        {subtask.title}
+                                    </Typography>
+                                </Box>
+                            ))}
+                        </Box>
+                    ) : (
+                        <Typography variant="caption" sx={{ color: 'text.disabled', fontStyle: 'italic' }}>
+                            No subtasks
+                        </Typography>
+                    )}
+                </Box>
+            </Collapse>
+
             {isHovered && (
                 <Box
                     sx={{
@@ -178,8 +193,18 @@ const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick }) 
                         mt: 0.5
                     }}
                 >
-                    <IconButton size="small" sx={{ color: 'text.secondary' }}>
-                        <GripVertical size={16} />
+                    <IconButton
+                        size="small"
+                        sx={{ color: 'text.secondary' }}
+                        onClick={() => setIsExpanded(!isExpanded)}
+                    >
+                        <ChevronDown
+                            size={16}
+                            sx={{
+                                transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                                transition: 'transform 0.2s ease-in-out'
+                            }}
+                        />
                     </IconButton>
                     <IconButton size="small" sx={{ color: 'text.secondary' }} onClick={onEditClick}>
                         <Pencil size={16} />
