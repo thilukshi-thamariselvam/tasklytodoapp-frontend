@@ -5,7 +5,7 @@ import {
 } from '@mui/material';
 import {
     CalendarDays, GripVertical, Pencil, MessageSquare, MoreHorizontal,
-    Trash2, ChevronDown
+    Trash2, ChevronDown, Maximize2
 } from 'lucide-react';
 import { useDeleteTask, useUpdateTask } from '../../hooks/useTaskMutations';
 import { useNavigate } from 'react-router-dom';
@@ -205,6 +205,16 @@ const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick }) 
                                 transition: 'transform 0.2s ease-in-out'
                             }}
                         />
+                    </IconButton>
+                    <IconButton size="small" sx={{ color: 'text.secondary' }}>
+                        <GripVertical size={16} />
+                    </IconButton>
+                    <IconButton
+                        size="small"
+                        sx={{ color: 'text.secondary' }}
+                        onClick={() => navigate(`/tasks/${task.id}`)}
+                    >
+                        <Maximize2 size={16} />
                     </IconButton>
                     <IconButton size="small" sx={{ color: 'text.secondary' }} onClick={onEditClick}>
                         <Pencil size={16} />

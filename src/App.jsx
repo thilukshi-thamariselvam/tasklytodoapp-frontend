@@ -3,6 +3,7 @@ import MainLayout from './layouts/MainLayout';
 import TodayPage from './pages/TodayPage';
 import InboxPage from './pages/InboxPage';
 import CompletedPage from './pages/CompletedPage';
+import TaskDetailPage from './pages/TaskDetailPage';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route index element={<TodayPage />} /> 
         <Route path="inbox" element={<InboxPage />} />
         <Route path="completed" element={<CompletedPage />} />
+        <Route path="tasks/:taskId" element={<TaskDetailPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

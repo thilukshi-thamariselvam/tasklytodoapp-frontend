@@ -9,3 +9,5 @@ export const updateTask = (taskId, taskData) => axiosInstance.patch(`/tasks/${ta
 export const deleteTask = (taskId) => axiosInstance.delete(`/tasks/${taskId}`);
 
 export const completeTask = (taskId) => axiosInstance.patch(`/tasks/${taskId}/complete`);
+
+export const getTaskById = (taskId) => axiosInstance.get(`/tasks/${taskId}`);
