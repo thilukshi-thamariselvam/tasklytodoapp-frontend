@@ -6,6 +6,7 @@ import CompletedPage from './pages/CompletedPage';
 import TaskDetailPage from './pages/TaskDetailPage';
 import SearchPage from './pages/SearchPage';
 import UpcomingPage from './pages/UpcomingPage';
+import FiltersLabelsPage from './pages/FiltersLabelsPage';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="tasks/:taskId" element={<TaskDetailPage />} />
           <Route path="search" element={<SearchPage />} />
           <Route path="upcoming" element={<UpcomingPage />} />
+          <Route path="filters" element={<FiltersLabelsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
