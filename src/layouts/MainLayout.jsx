@@ -1,7 +1,8 @@
-import { Box, Tooltip, IconButton } from '@mui/material';
 import { Outlet } from 'react-router-dom';
-import { Menu } from 'lucide-react';
-import { useState } from 'react';
+import { Box, Tooltip, IconButton, Typography } from '@mui/material';
+import { Menu, Search } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import CommandPalette from '../components/CommandPalette/CommandPalette';
 import SidebarProfile from '../components/Sidebar/SidebarProfile';
 import SidebarNav from '../components/Sidebar/SidebarNav';
 import SidebarProjects from '../components/Sidebar/SidebarProjects';
@@ -13,6 +14,20 @@ const MainLayout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
     const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
+
+    const [isCommandOpen, setIsCommandOpen] = useState(false);
+
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                setIsCommandOpen((prev) => !prev);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     return (
         <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
@@ -65,8 +80,37 @@ const MainLayout = () => {
                         </IconButton>
                     </Tooltip>
                 )}
+                <Box
+                    onClick={() => setIsCommandOpen(true)}
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        p: 1.5,
+                        mb: 3,
+                        borderRadius: 1,
+                        bgcolor: 'background.paper',
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        cursor: 'pointer',
+                        maxWidth: 650,
+                        '&:hover': { borderColor: 'text.disabled', bgcolor: 'grey.50' },
+                        transition: 'all 0.1s ease'
+                    }}
+                >
+                    <Search size={18} sx={{ color: 'text.disabled' }} />
+                    <Typography sx={{ color: 'text.disabled', fontSize: '0.9rem', flexGrow: 1 }}>
+                        Search tasks...
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 0.5 }}>
+                        <Box sx={{ minWidth: 22, height: 22, borderRadius: 0.5, border: '1px solid', borderColor: 'divider', bgcolor: 'grey.100', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 600, color: 'text.secondary' }}>Ctrl</Box>
+                        <Box sx={{ minWidth: 22, height: 22, borderRadius: 0.5, border: '1px solid', borderColor: 'divider', bgcolor: 'grey.100', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 600, color: 'text.secondary' }}>K</Box>
+                    </Box>
+                </Box>
+
                 <Outlet />
             </Box>
+            <CommandPalette isOpen={isCommandOpen} onClose={() => setIsCommandOpen(false)} />
             <AddTaskModal />
         </Box>
     );
