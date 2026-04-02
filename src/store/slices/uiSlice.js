@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   isAddTaskModalOpen: false,
+  activeFilterLabelId: null,
 };
 
 const uiSlice = createSlice({
@@ -14,8 +15,14 @@ const uiSlice = createSlice({
     closeAddTaskModal: (state) => {
       state.isAddTaskModalOpen = false;
     },
+    setActiveFilterLabel: (state, action) => {
+      state.activeFilterLabelId = action.payload;
+    },
+    clearActiveFilter: (state) => {
+      state.activeFilterLabelId = null;
+    },
   },
 });
 
-export const { openAddTaskModal, closeAddTaskModal } = uiSlice.actions;
+export const { openAddTaskModal, closeAddTaskModal, setActiveFilterLabel, clearActiveFilter } = uiSlice.actions;
 export default uiSlice.reducer;

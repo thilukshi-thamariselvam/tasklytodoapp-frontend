@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { setActiveFilterLabel } from '../store/slices/uiSlice';
 import {
     Box, Typography, IconButton, Collapse, Divider, Chip,
     List, ListItemButton, ListItemIcon, ListItemText, Avatar,
@@ -10,6 +13,9 @@ import { useLabels, useCreateLabel } from '../hooks/useLabels';
 const FiltersLabelsPage = () => {
     const [isFiltersOpen, setIsFiltersOpen] = useState(true);
     const { data: labels = [] } = useLabels("1");
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const activeFilterLabelId = useSelector((state) => state.ui.activeFilterLabelId);
 
     const createLabelMutation = useCreateLabel();
     const [isCreating, setIsCreating] = useState(false);
@@ -168,7 +174,18 @@ const FiltersLabelsPage = () => {
                     ) : (
                         <List sx={{ py: 0 }}>
                             {labels.map((label) => (
-                                <ListItemButton key={label.id} sx={{ borderRadius: 1, pl: 7 }}>
+                                <ListItemButton
+                                    key={label.id}
+                                    onClick={() => {
+                                        dispatch(setActiveFilterLabel(label.id));
+                                        navigate('/inbox');
+                                    }}
+                                    sx={{
+                                        borderRadius: 1,
+                                        pl: 7,
+                                        bgcolor: activeFilterLabelId === label.id ? 'action.selected' : 'transparent'
+                                    }}
+                                >
                                     <ListItemIcon sx={{ minWidth: 36 }}>
                                         <Box
                                             sx={{
