@@ -1,17 +1,20 @@
 import { Box, TextField, Button, Chip, IconButton } from '@mui/material';
-import { X, CalendarDays } from 'lucide-react';
+import { X, CalendarDays, Plus } from 'lucide-react';
+import { useState } from 'react';
 import { useFormik } from 'formik';
 import { useUpdateTask } from '../../hooks/useTaskMutations';
 import PriorityPopover from '../Priority/PriorityPopover';
 
 const TaskInlineEditor = ({ task, onCancel }) => {
     const updateTaskMutation = useUpdateTask();
+    const [subtaskInput, setSubtaskInput] = useState('');
 
     const formik = useFormik({
         initialValues: {
             title: task.title,
             description: task.description || '',
             priority: task.priority || 'LOW',
+            subtaskTitles: task.subtasks?.map(s => s.title) || [],
         },
         onSubmit: async (values, { setSubmitting }) => {
             try {
@@ -24,6 +27,20 @@ const TaskInlineEditor = ({ task, onCancel }) => {
             }
         },
     });
+
+    const handleAddSubtask = () => {
+        const trimmed = subtaskInput.trim();
+        if (trimmed && !formik.values.subtaskTitles.includes(trimmed)) {
+            formik.setFieldValue('subtaskTitles', [...formik.values.subtaskTitles, trimmed]);
+            setSubtaskInput('');
+        }
+    };
+
+    const handleRemoveSubtask = (indexToRemove) => {
+        formik.setFieldValue('subtaskTitles',
+            formik.values.subtaskTitles.filter((_, index) => index !== indexToRemove)
+        );
+    };
 
     return (
         <Box
@@ -74,6 +91,43 @@ const TaskInlineEditor = ({ task, onCancel }) => {
                     onChange={(val) => formik.setFieldValue('priority', val)}
                 />
                 <Button size="small" sx={{ textTransform: 'none', color: 'text.secondary', fontSize: '0.8rem' }}>Reminders</Button>
+            </Box>
+            
+            <Box sx={{ mt: 1.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <TextField
+                        size="small"
+                        placeholder="Add subtask"
+                        variant="standard"
+                        value={subtaskInput}
+                        onChange={(e) => setSubtaskInput(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                handleAddSubtask();
+                            }
+                        }}
+                        InputProps={{ disableUnderline: true, sx: { fontSize: '0.85rem' } }}
+                        sx={{ flex: 1 }}
+                    />
+                    <IconButton size="small" onClick={handleAddSubtask} disabled={!subtaskInput.trim()} sx={{ color: 'text.secondary' }}>
+                        <Plus size={18} />
+                    </IconButton>
+                </Box>
+                {formik.values.subtaskTitles.length > 0 && (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1 }}>
+                        {formik.values.subtaskTitles.map((subtask, index) => (
+                            <Chip
+                                key={index}
+                                label={subtask}
+                                size="small"
+                                onDelete={() => handleRemoveSubtask(index)}
+                                deleteIcon={<X size={14} />}
+                                sx={{ fontSize: '0.8rem', bgcolor: 'action.hover', '& .MuiChip-deleteIcon': { color: 'text.secondary' } }}
+                            />
+                        ))}
+                    </Box>
+                )}
             </Box>
 
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2, pt: 1, borderTop: '1px solid', borderColor: 'divider' }}>
