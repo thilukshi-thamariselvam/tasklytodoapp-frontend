@@ -1,15 +1,40 @@
 import { useState } from 'react';
-import { useLabels } from '../hooks/useLabels';
 import {
     Box, Typography, IconButton, Collapse, Divider, Chip,
-    List, ListItemButton, ListItemIcon, ListItemText, Avatar
+    List, ListItemButton, ListItemIcon, ListItemText, Avatar,
+    TextField, Button
 } from '@mui/material';
 import { ChevronDown, ChevronUp, Plus, Flame } from 'lucide-react';
+import { useLabels, useCreateLabel } from '../hooks/useLabels';
 
 const FiltersLabelsPage = () => {
     const [isFiltersOpen, setIsFiltersOpen] = useState(true);
     const { data: labels = [] } = useLabels("1");
+
+    const createLabelMutation = useCreateLabel();
+    const [isCreating, setIsCreating] = useState(false);
+    const [newLabelName, setNewLabelName] = useState('');
+    const [newLabelColor, setNewLabelColor] = useState('#1976D2');
+
+    const presetColors = ['#1976D2', '#D32F2F', '#388E3C', '#F57C00', '#7B1FA2', '#808080'];
+
     const [isLabelsOpen, setIsLabelsOpen] = useState(true);
+
+    const handleSave = async () => {
+        try {
+            await createLabelMutation.mutateAsync({
+                name: newLabelName.trim(),
+                color: newLabelColor,
+                userId: "1"
+            });
+            setNewLabelName('');
+            setNewLabelColor('#1976D2');
+            setIsCreating(false);
+        } catch (error) {
+            console.error("Failed to create label", error);
+        }
+    };
+
 
     return (
         <Box sx={{ maxWidth: 700 }}>
@@ -80,10 +105,58 @@ const FiltersLabelsPage = () => {
                             Labels
                         </Typography>
                     </Box>
-                    <IconButton size="small" sx={{ color: 'text.secondary' }}>
+                    <IconButton
+                        size="small"
+                        sx={{ color: 'text.secondary' }}
+                        onClick={() => setIsCreating(true)}
+                    >
                         <Plus size={20} />
                     </IconButton>
                 </Box>
+
+                <Collapse in={isCreating}>
+                    <Box sx={{ pl: 7, mt: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1, border: '1px solid', borderColor: 'divider' }}>
+                        <TextField
+                            size="small"
+                            fullWidth
+                            placeholder="Label name"
+                            variant="standard"
+                            value={newLabelName}
+                            onChange={(e) => setNewLabelName(e.target.value)}
+                            autoFocus
+                            InputProps={{ disableUnderline: true, sx: { fontSize: '0.9rem' } }}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && newLabelName.trim()) handleSave();
+                            }}
+                        />
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 2 }}>
+                            <Box sx={{ display: 'flex', gap: 1 }}>
+                                {presetColors.map((color) => (
+                                    <Box
+                                        key={color}
+                                        onClick={() => setNewLabelColor(color)}
+                                        sx={{
+                                            width: 20, height: 20, borderRadius: '50%', bgcolor: color,
+                                            cursor: 'pointer', border: newLabelColor === color ? '2px solid black' : '1px solid lightgrey',
+                                            transition: 'border 0.1s ease'
+                                        }}
+                                    />
+                                ))}
+                            </Box>
+                            <Box sx={{ display: 'flex', gap: 1 }}>
+                                <Button size="small" onClick={() => { setIsCreating(false); setNewLabelName(''); }}>Cancel</Button>
+                                <Button
+                                    size="small"
+                                    variant="contained"
+                                    disabled={!newLabelName.trim() || createLabelMutation.isPending}
+                                    onClick={handleSave}
+                                >
+                                    Save
+                                </Button>
+                            </Box>
+                        </Box>
+                    </Box>
+                </Collapse>
 
                 <Collapse in={isLabelsOpen}>
                     {labels.length === 0 ? (
