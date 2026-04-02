@@ -4,7 +4,7 @@ import { getTasks, getTaskById } from '../api/taskApi';
 export const useTasks = (userId) => {
   return useQuery({
     queryKey: ['tasks', userId],
-    queryFn: () => getTasks(userId).then((res) => res.data),
+    queryFn: () => getTasks(userId).then((res) => res.data.data),
     staleTime: 30 * 1000,
   });
 };
@@ -12,7 +12,7 @@ export const useTasks = (userId) => {
 export const useTaskById = (taskId) => {
   return useQuery({
     queryKey: ['task', taskId],
-    queryFn: () => getTaskById(taskId).then((res) => res.data),
+    queryFn: () => getTaskById(taskId).then((res) => res.data.data),
     enabled: !!taskId,
   });
 };
