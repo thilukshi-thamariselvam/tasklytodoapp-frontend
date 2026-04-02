@@ -4,11 +4,11 @@ import { useFormik } from 'formik';
 import { useQueryClient } from '@tanstack/react-query';
 import {
     Dialog, DialogContent, Box, TextField, IconButton,
-    Button, Menu, MenuItem, ListItemIcon, ListItemText, Divider, Typography
+    Button, Menu, MenuItem, ListItemIcon, ListItemText, Divider, Typography, Chip
 } from '@mui/material';
 import {
     Mic, MoreHorizontal, CalendarDays, Paperclip, Flag, Bell,
-    AtSign, MapPin, Puzzle, Settings
+    AtSign, MapPin, Puzzle, Settings, Plus, X
 } from 'lucide-react';
 import { closeAddTaskModal } from '../../store/slices/uiSlice';
 import { taskSchema } from '../../validation/taskSchema';
@@ -22,12 +22,14 @@ const AddTaskModal = () => {
     const isModalOpen = useSelector((state) => state.ui.isAddTaskModalOpen);
 
     const [anchorEl, setAnchorEl] = useState(null);
+    const [subtaskInput, setSubtaskInput] = useState('');
 
     const formik = useFormik({
         initialValues: {
             title: '',
             description: '',
             projectName: 'Inbox',
+            subtaskTitles: [],
         },
         validationSchema: taskSchema,
         onSubmit: async (values, { setSubmitting }) => {
@@ -45,6 +47,20 @@ const AddTaskModal = () => {
             }
         },
     });
+
+    const handleAddSubtask = () => {
+        const trimmed = subtaskInput.trim();
+        if (trimmed && !formik.values.subtaskTitles.includes(trimmed)) {
+            formik.setFieldValue('subtaskTitles', [...formik.values.subtaskTitles, trimmed]);
+            setSubtaskInput('');
+        }
+    };
+
+    const handleRemoveSubtask = (indexToRemove) => {
+        formik.setFieldValue('subtaskTitles',
+            formik.values.subtaskTitles.filter((_, index) => index !== indexToRemove)
+        );
+    };
 
     const handleClose = () => {
         dispatch(closeAddTaskModal());
@@ -96,6 +112,53 @@ const AddTaskModal = () => {
                     rows={2}
                     InputProps={{ disableUnderline: true, sx: { fontSize: '0.9rem', color: 'text.secondary' } }}
                 />
+                <Box sx={{ mt: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <TextField
+                            size="small"
+                            placeholder="Add subtask"
+                            variant="standard"
+                            value={subtaskInput}
+                            onChange={(e) => setSubtaskInput(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    handleAddSubtask();
+                                }
+                            }}
+                            InputProps={{ disableUnderline: true, sx: { fontSize: '0.9rem' } }}
+                            sx={{ flex: 1 }}
+                        />
+                        <IconButton
+                            size="small"
+                            onClick={handleAddSubtask}
+                            disabled={!subtaskInput.trim()}
+                            sx={{ color: 'text.secondary' }}
+                        >
+                            <Plus size={18} />
+                        </IconButton>
+                    </Box>
+
+                    {formik.values.subtaskTitles.length > 0 && (
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1 }}>
+                            {formik.values.subtaskTitles.map((subtask, index) => (
+                                <Chip
+                                    key={index}
+                                    label={subtask}
+                                    size="small"
+                                    onDelete={() => handleRemoveSubtask(index)}
+                                    deleteIcon={<X size={14} />}
+                                    sx={{
+                                        fontSize: '0.8rem',
+                                        bgcolor: 'action.hover',
+                                        '& .MuiChip-deleteIcon': { color: 'text.secondary' }
+                                    }}
+                                />
+                            ))}
+                        </Box>
+                    )}
+                </Box>
+
 
                 <Box sx={{ display: 'flex', gap: 1, mt: 2, mb: 1 }}>
                     <DatePickerPopover

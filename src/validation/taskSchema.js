@@ -23,4 +23,6 @@ export const taskSchema = Yup.object().shape({
         .default('LOW'),
 
     projectName: Yup.string().default('Inbox'),
+
+    subtaskTitles: Yup.array().of(Yup.string().max(255, 'Subtask title is too long')),
 });
