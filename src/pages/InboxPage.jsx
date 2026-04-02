@@ -9,13 +9,15 @@ import TaskInlineEditor from '../components/Task/TaskInlineEditor';
 
 const InboxPage = () => {
   const { data: tasks, isLoading, isError } = useTasks("1");
-
   const activeFilterLabelId = useSelector((state) => state.ui.activeFilterLabelId);
+  const activeFilterPriority = useSelector((state) => state.ui.activeFilterPriority);
   const dispatch = useDispatch();
 
-  const filteredTasks = activeFilterLabelId
-    ? tasks.filter(task => task.labels?.some(label => label.id === activeFilterLabelId))
-    : tasks;
+  const filteredTasks = tasks.filter((task) => {
+    if (activeFilterLabelId && !task.labels?.some(label => label.id === activeFilterLabelId)) return false;
+    if (activeFilterPriority && task.priority !== activeFilterPriority) return false;
+    return true;
+  });
 
   const [hoveredTaskId, setHoveredTaskId] = useState(null);
   const [editingTaskId, setEditingTaskId] = useState(null);
@@ -74,10 +76,13 @@ const InboxPage = () => {
           <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>
             {activeFilterLabelId ? 'No tasks match this label' : 'Your Inbox is empty'}
           </Typography>
-          {activeFilterLabelId && (
+          {(activeFilterLabelId || activeFilterPriority) && (
             <Button
               startIcon={<X size={16} />}
-              onClick={() => dispatch(clearActiveFilter())}
+              onClick={() => {
+                dispatch(clearActiveFilter());
+                dispatch(clearActiveFilterPriority());
+              }}
               sx={{ mt: 2, textTransform: 'none' }}
             >
               Clear filter

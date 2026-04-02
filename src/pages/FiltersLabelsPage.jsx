@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { setActiveFilterLabel } from '../store/slices/uiSlice';
+import { setActiveFilterLabel, clearActiveFilter } from '../store/slices/uiSlice';
+import { setActiveFilterPriority, clearActiveFilterPriority } from '../store/slices/uiSlice';
 import {
     Box, Typography, IconButton, Collapse, Divider, Chip,
     List, ListItemButton, ListItemIcon, ListItemText, Avatar,
@@ -16,6 +17,7 @@ const FiltersLabelsPage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const activeFilterLabelId = useSelector((state) => state.ui.activeFilterLabelId);
+    const activeFilterPriority = useSelector((state) => state.ui.activeFilterPriority);
 
     const createLabelMutation = useCreateLabel();
     const [isCreating, setIsCreating] = useState(false);
@@ -75,7 +77,13 @@ const FiltersLabelsPage = () => {
 
                 <Collapse in={isFiltersOpen}>
                     <List sx={{ py: 0 }}>
-                        <ListItemButton sx={{ borderRadius: 1, pl: 7 }}>
+                        <ListItemButton
+                            onClick={() => {
+                                dispatch(clearActiveFilter());
+                                navigate('/inbox');
+                            }}
+                            sx={{ borderRadius: 1, pl: 7 }}
+                        >
                             <ListItemIcon sx={{ minWidth: 36 }}>
                                 <Flame size={18} sx={{ color: 'text.secondary' }} />
                             </ListItemIcon>
@@ -86,7 +94,18 @@ const FiltersLabelsPage = () => {
                         </ListItemButton>
                         <Divider variant="inset" sx={{ ml: 7 }} />
 
-                        <ListItemButton sx={{ borderRadius: 1, pl: 7 }}>
+                        <ListItemButton
+                            onClick={() => {
+                                dispatch(clearActiveFilter());
+                                dispatch(setActiveFilterPriority('URGENT'));
+                                navigate('/inbox');
+                            }}
+                            sx={{
+                                borderRadius: 1,
+                                pl: 7,
+                                bgcolor: activeFilterPriority === 'URGENT' ? 'action.selected' : 'transparent'
+                            }}
+                        >
                             <ListItemIcon sx={{ minWidth: 36 }}>
                                 <Flame size={18} sx={{ color: 'text.secondary' }} />
                             </ListItemIcon>
