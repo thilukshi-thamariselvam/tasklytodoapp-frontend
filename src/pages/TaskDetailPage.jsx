@@ -73,6 +73,22 @@ const TaskDetailPage = () => {
                     {task.projectName && (
                         <Chip label={task.projectName} variant="outlined" size="small" />
                     )}
+
+                    {task.labels && task.labels.length > 0 && task.labels.map((label) => (
+                        <Chip
+                            key={label.id}
+                            label={label.name}
+                            size="small"
+                            icon={<Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: label.color, ml: 0.5 }} />}
+                            sx={{
+                                fontWeight: 500,
+                                bgcolor: `${label.color}15`,
+                                color: label.color,
+                                borderColor: `${label.color}40`,
+                                '& .MuiChip-icon': { color: label.color }
+                            }}
+                        />
+                    ))}
                 </Box>
 
                 <Divider sx={{ mb: 3 }} />
