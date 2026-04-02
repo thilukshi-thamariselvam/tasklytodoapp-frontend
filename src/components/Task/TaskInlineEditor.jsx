@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useFormik } from 'formik';
 import { useUpdateTask } from '../../hooks/useTaskMutations';
 import PriorityPopover from '../Priority/PriorityPopover';
+import DatePickerPopover from '../Date/DatePickerPopover';
 
 const TaskInlineEditor = ({ task, onCancel }) => {
     const updateTaskMutation = useUpdateTask();
@@ -14,6 +15,7 @@ const TaskInlineEditor = ({ task, onCancel }) => {
             title: task.title,
             description: task.description || '',
             priority: task.priority || 'LOW',
+            dueDate: task.dueDate || null,
             subtaskTitles: task.subtasks?.map(s => s.title) || [],
         },
         onSubmit: async (values, { setSubmitting }) => {
@@ -77,14 +79,10 @@ const TaskInlineEditor = ({ task, onCancel }) => {
             />
 
             <Box sx={{ display: 'flex', gap: 1, mt: 2, alignItems: 'center' }}>
-                {task.dueDate && (
-                    <Chip
-                        icon={<CalendarDays size={14} />}
-                        label={task.dueDate}
-                        onDelete={onCancel}
-                        sx={{ color: '#D32F2F', border: '1px solid #EF9A9A', backgroundColor: 'transparent' }}
-                    />
-                )}
+                <DatePickerPopover
+                    value={formik.values.dueDate}
+                    onChange={(val) => formik.setFieldValue('dueDate', val)}
+                />
 
                 <PriorityPopover
                     value={formik.values.priority}
@@ -92,7 +90,7 @@ const TaskInlineEditor = ({ task, onCancel }) => {
                 />
                 <Button size="small" sx={{ textTransform: 'none', color: 'text.secondary', fontSize: '0.8rem' }}>Reminders</Button>
             </Box>
-            
+
             <Box sx={{ mt: 1.5 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <TextField
