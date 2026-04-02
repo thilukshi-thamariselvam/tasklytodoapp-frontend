@@ -11,3 +11,5 @@ export const deleteTask = (taskId) => axiosInstance.delete(`/tasks/${taskId}`);
 export const completeTask = (taskId) => axiosInstance.patch(`/tasks/${taskId}/complete`);
 
 export const getTaskById = (taskId) => axiosInstance.get(`/tasks/${taskId}`);
+
+export const searchTasks = (userId, query) => axiosInstance.get(`/tasks/search?userId=${userId}&query=${query}`);

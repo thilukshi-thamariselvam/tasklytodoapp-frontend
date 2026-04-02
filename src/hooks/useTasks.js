@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getTasks, getTaskById } from '../api/taskApi';
+import { getTasks, getTaskById, searchTasks } from '../api/taskApi';
 
 export const useTasks = (userId) => {
   return useQuery({
@@ -14,5 +14,13 @@ export const useTaskById = (taskId) => {
     queryKey: ['task', taskId],
     queryFn: () => getTaskById(taskId).then((res) => res.data.data),
     enabled: !!taskId,
+  });
+};
+
+export const useSearchTasks = (userId, query) => {
+  return useQuery({
+    queryKey: ['tasks', 'search', userId, query],
+    queryFn: () => searchTasks(userId, query).then((res) => res.data.data),
+    enabled: query !== undefined && query.length > 1,
   });
 };
