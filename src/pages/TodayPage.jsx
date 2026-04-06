@@ -8,6 +8,7 @@ import { setSearchContext, clearSearchContext } from '../store/slices/uiSlice';
 import TaskItem from "../components/Task/TaskItem";
 import TaskInlineEditor from "../components/Task/TaskInlineEditor";
 import { groupTasksByDate } from "../utils/taskUtils";
+import { openAddTaskModal } from '../store/slices/uiSlice';
 
 const TodayPage = () => {
   const { data: tasks, isLoading, isError } = useTasks("1");
@@ -59,12 +60,12 @@ const TodayPage = () => {
         </Box>
 
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button variant="outlined" startIcon={<CalendarPlus size={16} />} sx={{ color: 'text.secondary', borderColor: 'divider', textTransform: 'none', '&:hover': { borderColor: 'text.secondary', backgroundColor: 'background.paper' } }}>
+          {/*   <Button variant="outlined" startIcon={<CalendarPlus size={16} />} sx={{ color: 'text.secondary', borderColor: 'divider', textTransform: 'none', '&:hover': { borderColor: 'text.secondary', backgroundColor: 'background.paper' } }}>
             Connect calendar
           </Button>
           <Tooltip title="Display settings">
             <IconButton sx={{ color: 'text.secondary' }}><Settings2 size={20} /></IconButton>
-          </Tooltip>
+          </Tooltip> */}
         </Box>
       </Box>
 
@@ -104,9 +105,9 @@ const TodayPage = () => {
                   <ChevronDown size={18} />
                   <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'text.primary' }}>Overdue</Typography>
                 </Box>
-                <Button size="small" sx={{ color: 'error.main', textTransform: 'none', fontSize: '0.8rem', fontWeight: 600 }}>
+                {/* <Button size="small" sx={{ color: 'error.main', textTransform: 'none', fontSize: '0.8rem', fontWeight: 600 }}>
                   Reschedule
-                </Button>
+                </Button> */}
               </Box>
               <Divider sx={{ mb: 1 }} />
               {groupedTasks.overdue.map(renderTaskRow)}
@@ -123,6 +124,7 @@ const TodayPage = () => {
 
             <Button
               size="small"
+              onClick={() => dispatch(openAddTaskModal())}
               sx={{ color: 'text.secondary', textTransform: 'none', pl: 1, mb: 1, fontSize: '0.85rem' }}
             >
               + Add task

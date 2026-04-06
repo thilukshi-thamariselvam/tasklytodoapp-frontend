@@ -51,7 +51,7 @@ const AddTaskModal = () => {
                 queryClient.invalidateQueries({ queryKey: ['tasks'] });
                 dispatch(closeAddTaskModal());
                 resetForm();
-                setSelectedFile(null); 
+                setSelectedFile(null);
             } catch (error) {
                 console.error("Failed to create task:", error);
             } finally {
@@ -194,7 +194,7 @@ const AddTaskModal = () => {
                         </Box>
                     )}
                 </Box>
-                
+
                 {formik.values.labelIds?.length > 0 && (
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1, mb: 1 }}>
                         {formik.values.labelIds.map(id => {
@@ -226,7 +226,7 @@ const AddTaskModal = () => {
                         value={formik.values.dueDate}
                         onChange={(val) => formik.setFieldValue('dueDate', val)}
                     />
-                    
+
                     {/* Hidden File Input */}
                     <input
                         type="file"
@@ -234,12 +234,12 @@ const AddTaskModal = () => {
                         style={{ display: 'none' }}
                         onChange={handleFileChange}
                     />
-                    
+
                     {/* Attachment Button */}
-                    <Button 
-                        size="small" 
-                        startIcon={<Paperclip size={16} />} 
-                        variant="outlined" 
+                    <Button
+                        size="small"
+                        startIcon={<Paperclip size={16} />}
+                        variant="outlined"
                         sx={{ textTransform: 'none' }}
                         onClick={() => fileInputRef.current.click()}
                     >
@@ -250,7 +250,7 @@ const AddTaskModal = () => {
                         value={formik.values.priority}
                         onChange={(val) => formik.setFieldValue('priority', val)}
                     />
-                    <Button size="small" startIcon={<Bell size={16} />} variant="outlined" sx={{ textTransform: 'none' }}>Reminders</Button>
+                    {/*<Button size="small" startIcon={<Bell size={16} />} variant="outlined" sx={{ textTransform: 'none' }}>Reminders</Button>*/}
 
                     <IconButton
                         size="small"
@@ -262,7 +262,6 @@ const AddTaskModal = () => {
                     </IconButton>
                 </Box>
 
-                {/* Show selected file name */}
                 {selectedFile && (
                     <Chip
                         label={selectedFile.name}
@@ -305,6 +304,7 @@ const AddTaskModal = () => {
                             </MenuItem>
                         );
                     })}
+                    {/*
                     <MenuItem onClick={() => setAnchorEl(null)}>
                         <ListItemIcon><MapPin size={18} sx={{ color: '#FFA726' }} /></ListItemIcon>
                         <ListItemText primary="Location" />
@@ -322,6 +322,7 @@ const AddTaskModal = () => {
                     <MenuItem onClick={() => setAnchorEl(null)}>
                         <ListItemText primary="Edit Task Actions" sx={{ color: 'primary.main', fontWeight: 600 }} />
                     </MenuItem>
+                    */}
                 </Menu>
 
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2, pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>

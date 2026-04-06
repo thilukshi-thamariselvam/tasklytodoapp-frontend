@@ -36,7 +36,7 @@ const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick, dr
                 display: 'flex',
                 alignItems: 'flex-start',
                 gap: 1.5,
-                p: 1.5,
+                p: 1,
                 borderRadius: 1,
                 backgroundColor: isHovered ? 'background.paper' : 'transparent',
                 borderBottom: '1px solid',
@@ -94,12 +94,12 @@ const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick, dr
             />
 
             <Box sx={{ flexGrow: 1, pl: 4 }}>
-                <Typography variant="body1" sx={{ fontWeight: 500, color: 'text.primary', lineHeight: 1.3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 500, color: 'text.primary', lineHeight: 1.2 }}>
                     {task.title}
                 </Typography>
 
                 {task.description && (
-                    <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.25, fontSize: '0.85rem' }}>
+                    <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.1, fontSize: '0.85rem', fontSize: '0.8rem', lineHeight: 1.3 }}>
                         {task.description}
                     </Typography>
                 )}
@@ -107,7 +107,7 @@ const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick, dr
                 <Box sx={{ display: 'flex', gap: 2, mt: 1, alignItems: 'center' }}>
                     {task.dueDate && (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
-                            <CalendarDays size={14} />
+                            <CalendarDays size={13} />
                             <Typography variant="caption">{task.dueDate}</Typography>
                         </Box>
                     )}

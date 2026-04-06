@@ -103,7 +103,7 @@ const CommandPalette = ({ isOpen, onClose, context = null }) => {
                 <Search size={20} sx={{ color: 'text.secondary', flexShrink: 0 }} />
                 <InputBase
                     inputRef={inputRef}
-                    placeholder="Search or type a command..."
+                    placeholder="Search or type a word..."
                     value={query}
                     onChange={(e) => { setQuery(e.target.value); setSelectedIndex(0); }}
                     onKeyDown={handleKeyDown}

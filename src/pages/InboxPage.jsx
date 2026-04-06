@@ -103,18 +103,18 @@ const InboxPage = () => {
 
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          <Typography variant="h4" sx={{ color: 'text.primary' }}>Inbox</Typography>
+          <Typography variant="h4" sx={{ color: 'text.primary', fontSize: '1.8rem' }}>Inbox</Typography>
           {!showEmptyState && tasks?.length > 0 && (
             <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
               {tasks.length} task{tasks.length > 1 ? 's' : ''}
             </Typography>
           )}
         </Box>
-        <Tooltip title="Display settings">
+       {/* <Tooltip title="Display settings">
           <IconButton sx={{ color: 'text.secondary' }}><Settings2 size={20} /></IconButton>
-        </Tooltip>
+        </Tooltip> */}
       </Box>
 
       {isLoading && (<Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><CircularProgress /></Box>)}
