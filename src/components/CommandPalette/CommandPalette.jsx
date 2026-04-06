@@ -35,8 +35,8 @@ const CommandPalette = ({ isOpen, onClose }) => {
     const [query, setQuery] = useState('');
     const [selectedIndex, setSelectedIndex] = useState(0);
     const inputRef = useRef(null);
-    
-    const userId = "1"; 
+
+    const userId = "1";
     const { data: searchResults = [], isFetching } = useSearchTasks(userId, query);
 
     // Static Navigation Links
@@ -47,13 +47,16 @@ const CommandPalette = ({ isOpen, onClose }) => {
         { label: 'Go to Filters & Labels', icon: <Filter size={18} />, shortcut: ['G', 'F'], action: () => navigate('/') },
     ];
 
-    const menuItems = query.length > 1 
+    const menuItems = query.length > 1
         ? searchResults.map(task => ({
             label: task.title,
             description: task.projectName || 'Inbox',
             icon: <Search size={18} />,
-            action: () => { navigate(`/tasks/${task.id}`); onClose(); }
-          }))
+            action: () => {
+                navigate(`/tasks/${task.id}`);
+                setTimeout(() => onClose(), 150);
+            }
+        }))
         : navItems.map(item => ({ ...item, action: () => { item.action(); onClose(); } }));
 
     useEffect(() => {
@@ -80,11 +83,11 @@ const CommandPalette = ({ isOpen, onClose }) => {
         <Dialog
             open={isOpen}
             onClose={onClose}
-            disableEnforceFocus 
+            disableEnforceFocus
             sx={{
                 '& .MuiDialog-container': {
-                    alignItems: 'flex-start', 
-                    pt: '15vh' 
+                    alignItems: 'flex-start',
+                    pt: '15vh'
                 },
                 '& .MuiPaper-root': {
                     borderRadius: 3,
@@ -114,7 +117,7 @@ const CommandPalette = ({ isOpen, onClose }) => {
             </Box>
 
             <List sx={{ p: 1.5, maxHeight: 400, overflowY: 'auto', bgcolor: 'background.paper' }}>
-                
+
                 {query.length <= 1 && (
                     <Typography variant="caption" sx={{ px: 2, py: 1, color: 'text.disabled', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>
                         Navigation
@@ -142,9 +145,9 @@ const CommandPalette = ({ isOpen, onClose }) => {
                         <ListItemIcon sx={{ minWidth: 40, color: 'text.secondary' }}>
                             {item.icon}
                         </ListItemIcon>
-                        <ListItemText 
-                            primary={item.label} 
-                            secondary={item.description} 
+                        <ListItemText
+                            primary={item.label}
+                            secondary={item.description}
                             primaryTypographyProps={{ fontWeight: 500, fontSize: '0.95rem' }}
                             secondaryTypographyProps={{ fontSize: '0.8rem' }}
                         />
