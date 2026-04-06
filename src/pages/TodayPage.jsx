@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Typography, Button, IconButton, Tooltip, CircularProgress, Divider } from '@mui/material';
 import { CalendarPlus, Settings2, ChevronDown } from 'lucide-react';
 import dayjs from 'dayjs';
 import { useTasks } from "../hooks/useTasks";
+import { useDispatch } from 'react-redux';
+import { setSearchContext, clearSearchContext } from '../store/slices/uiSlice';
 import TaskItem from "../components/Task/TaskItem";
 import TaskInlineEditor from "../components/Task/TaskInlineEditor";
 import { groupTasksByDate } from "../utils/taskUtils";
@@ -34,6 +36,14 @@ const TodayPage = () => {
       />
     )
   );
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(setSearchContext('today'));
+    return () => {
+      dispatch(clearSearchContext());
+    };
+  }, [dispatch]);
 
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>

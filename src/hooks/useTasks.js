@@ -17,10 +17,10 @@ export const useTaskById = (taskId) => {
   });
 };
 
-export const useSearchTasks = (userId, query) => {
+export const useSearchTasks = (userId, query, context = null) => {
   return useQuery({
-    queryKey: ['tasks', 'search', userId, query],
-    queryFn: () => searchTasks(userId, query).then((res) => res.data.data),
+    queryKey: ['tasks', 'search', userId, query, context],
+    queryFn: () => searchTasks(userId, query, context).then((res) => res.data.data),
     enabled: query !== undefined && query.length > 1,
   });
 };

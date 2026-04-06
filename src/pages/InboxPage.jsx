@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Box, Typography, Button, IconButton, Tooltip, CircularProgress, Chip } from '@mui/material';
 import { X, Settings2 } from 'lucide-react';
-import { clearActiveFilter } from '../store/slices/uiSlice';
+import { clearActiveFilter, setSearchContext, clearSearchContext } from '../store/slices/uiSlice';
 import { useTasks } from '../hooks/useTasks';
 import TaskItem from '../components/Task/TaskItem';
 import TaskInlineEditor from '../components/Task/TaskInlineEditor';
@@ -12,6 +12,14 @@ const InboxPage = () => {
   const activeFilterLabelId = useSelector((state) => state.ui.activeFilterLabelId);
   const activeFilterPriority = useSelector((state) => state.ui.activeFilterPriority);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(setSearchContext('inbox'));
+    return () => {
+      dispatch(clearSearchContext());
+    };
+  }, [dispatch]);
+
 
   const filteredTasks = tasks.filter((task) => {
     if (activeFilterLabelId && !task.labels?.some(label => label.id === activeFilterLabelId)) return false;

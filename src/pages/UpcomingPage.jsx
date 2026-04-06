@@ -1,7 +1,10 @@
+import { useEffect } from 'react';
 import { Typography, Box, Divider } from '@mui/material';
 import dayjs from 'dayjs';
 import { useTasks } from '../hooks/useTasks';
 import TaskItem from '../components/Task/TaskItem';
+import { useDispatch } from 'react-redux';
+import { setSearchContext, clearSearchContext } from '../store/slices/uiSlice';
 
 const UpcomingPage = () => {
     const { data: tasks = [], isLoading } = useTasks("1");
@@ -37,6 +40,15 @@ const UpcomingPage = () => {
 
         return { label: taskDate.format('dddd, MMMM D'), color: 'text.secondary' };
     };
+
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(setSearchContext('upcoming'));
+        return () => {
+            dispatch(clearSearchContext());
+        };
+    }, [dispatch]);
 
     return (
         <Box>

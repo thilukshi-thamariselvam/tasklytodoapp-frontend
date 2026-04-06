@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import { Box, Tooltip, IconButton, Typography } from '@mui/material';
 import { Menu, Search } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import CommandPalette from '../components/CommandPalette/CommandPalette';
 import SidebarProfile from '../components/Sidebar/SidebarProfile';
 import SidebarNav from '../components/Sidebar/SidebarNav';
@@ -12,6 +13,8 @@ import AddTaskModal from '../components/Modal/AddTaskModal';
 const MainLayout = () => {
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+    const searchContext = useSelector((state) => state.ui.searchContext);
 
     const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
@@ -110,7 +113,11 @@ const MainLayout = () => {
 
                 <Outlet />
             </Box>
-            <CommandPalette isOpen={isCommandOpen} onClose={() => setIsCommandOpen(false)} />
+            <CommandPalette
+                isOpen={isCommandOpen}
+                onClose={() => setIsCommandOpen(false)}
+                context={searchContext}
+            />
             <AddTaskModal />
         </Box>
     );

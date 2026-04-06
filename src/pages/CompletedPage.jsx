@@ -1,14 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Typography, Button, IconButton, Tooltip, CircularProgress } from '@mui/material';
 import { Settings2 } from 'lucide-react';
+import { useSelector, useDispatch } from 'react-redux';
 import { useTasks } from '../hooks/useTasks';
 import TaskItem from '../components/Task/TaskItem';
 import { groupTasksByDate } from '../utils/taskUtils';
+import { setSearchContext, clearSearchContext } from '../store/slices/uiSlice';
 
 const CompletedPage = () => {
+  const dispatch = useDispatch();
   const { data: tasks, isLoading, isError } = useTasks("1");
   const [hoveredTaskId, setHoveredTaskId] = useState(null);
   const [editingTaskId, setEditingTaskId] = useState(null);
+
+
+  useEffect(() => {
+    dispatch(setSearchContext('completed'));
+    return () => {
+      dispatch(clearSearchContext());
+    };
+  }, [dispatch]);
 
   if (isLoading) {
     return (
@@ -29,26 +40,26 @@ const CompletedPage = () => {
   const completedTasks = tasks?.filter(task => task.status === 'COMPLETED');
 
   const completedDates = {};
-  
+
   completedTasks?.forEach(task => {
     const dateKey = task.updatedAt ? task.updatedAt.substring(0, 10) : 'No Date';
     if (!completedDates[dateKey]) completedDates[dateKey] = [];
     completedDates[dateKey].push(task);
   });
 
-  const sortedDates = Object.keys(completedDates).sort().reverse(); 
+  const sortedDates = Object.keys(completedDates).sort().reverse();
 
   const renderTaskRow = (task) => (
     editingTaskId === task.id ? (
-      <TaskInlineEditor 
-        key={task.id} 
-        task={task} 
-        onCancel={() => setEditingTaskId(null)} 
+      <TaskInlineEditor
+        key={task.id}
+        task={task}
+        onCancel={() => setEditingTaskId(null)}
       />
     ) : (
-      <TaskItem 
-        key={task.id} 
-        task={task} 
+      <TaskItem
+        key={task.id}
+        task={task}
         isHovered={hoveredTaskId === task.id}
         onMouseEnter={() => setHoveredTaskId(task.id)}
         onMouseLeave={() => setHoveredTaskId(null)}
@@ -71,7 +82,7 @@ const CompletedPage = () => {
           </Button>
           <Tooltip title="Display settings">
             <IconButton sx={{ color: 'text.secondary' }}><Settings2 size={20} /></IconButton>
-            </Tooltip>
+          </Tooltip>
         </Box>
       </Box>
 

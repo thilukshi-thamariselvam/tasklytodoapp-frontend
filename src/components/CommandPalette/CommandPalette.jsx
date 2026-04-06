@@ -30,14 +30,14 @@ const Keycap = ({ children }) => (
     </Box>
 );
 
-const CommandPalette = ({ isOpen, onClose }) => {
+const CommandPalette = ({ isOpen, onClose, context = null }) => {
     const navigate = useNavigate();
     const [query, setQuery] = useState('');
     const [selectedIndex, setSelectedIndex] = useState(0);
     const inputRef = useRef(null);
 
     const userId = "1";
-    const { data: searchResults = [], isFetching } = useSearchTasks(userId, query);
+    const { data: searchResults = [], isFetching } = useSearchTasks(userId, query, context);
 
     // Static Navigation Links
     const navItems = [
