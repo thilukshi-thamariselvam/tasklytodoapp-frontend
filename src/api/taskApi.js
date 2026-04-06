@@ -60,3 +60,5 @@ export const updateTaskAttachment = (taskId, file) => {
         }
     });
 };
+
+export const updateTaskOrder = (tasks) => axiosInstance.put('/tasks/order', tasks);

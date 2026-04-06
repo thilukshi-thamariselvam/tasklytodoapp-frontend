@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import {
-    Box, Typography, Checkbox, IconButton, Menu, MenuItem, Divider,
-    ListItemIcon, ListItemText, Collapse, Dialog, DialogTitle,
+    Box, Typography, Checkbox, IconButton, Collapse, Dialog, DialogTitle,
     DialogContent, DialogContentText, DialogActions, Button
 } from '@mui/material';
 import {
-    CalendarDays, GripVertical, Pencil, MessageSquare, MoreHorizontal,
-    Trash2, ChevronDown, Maximize2
+    CalendarDays, GripVertical, Pencil, Trash2, ChevronDown, Maximize2
 } from 'lucide-react';
 import { useDeleteTask, useUpdateTask } from '../../hooks/useTaskMutations';
 import { useNavigate } from 'react-router-dom';
@@ -20,7 +18,7 @@ const priorityStyles = {
     LOW: { border: '#E0E0E0', bg: 'transparent', hoverBg: 'rgba(0, 0, 0, 0.04)' },
 };
 
-const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick }) => {
+const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick, dragHandleProps }) => {
 
     const [menuAnchor, setMenuAnchor] = useState(null);
     const [isExpanded, setIsExpanded] = useState(false);
@@ -209,7 +207,11 @@ const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick }) 
                             }}
                         />
                     </IconButton>
-                    <IconButton size="small" sx={{ color: 'text.secondary' }}>
+                    <IconButton
+                        size="small"
+                        sx={{ color: 'text.secondary', cursor: 'grab' }}
+                        {...dragHandleProps}
+                    >
                         <GripVertical size={16} />
                     </IconButton>
                     <IconButton
@@ -222,60 +224,20 @@ const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick }) 
                     <IconButton size="small" sx={{ color: 'text.secondary' }} onClick={onEditClick}>
                         <Pencil size={16} />
                     </IconButton>
-                    <IconButton size="small" sx={{ color: 'text.secondary' }}>
-                        <CalendarDays size={16} />
-                    </IconButton>
-                    <IconButton size="small" sx={{ color: 'text.secondary' }}>
-                        <MessageSquare size={16} />
-                    </IconButton>
+
                     <IconButton
                         size="small"
-                        sx={{ color: 'text.secondary' }}
+                        sx={{ color: 'error.main' }}
                         onClick={(e) => {
                             e.stopPropagation();
-                            setMenuAnchor(e.currentTarget);
+                            setIsDeleteDialogOpen(true);
                         }}
                     >
-                        <MoreHorizontal size={16} />
+                        <Trash2 size={16} />
                     </IconButton>
                 </Box>
             )}
-            <Menu
-                anchorEl={menuAnchor}
-                open={Boolean(menuAnchor)}
-                onClose={() => setMenuAnchor(null)}
-                slotProps={{
-                    paper: {
-                        sx: {
-                            width: 180,
-                            borderRadius: 2,
-                            boxShadow: 5,
-                            mt: 0.5
-                        }
-                    }
-                }}
-            >
-                <MenuItem
-                    onClick={() => setMenuAnchor(null)}
-                >
-                    <ListItemText primary="Add comment" />
-                </MenuItem>
 
-                <Divider />
-
-                <MenuItem
-                    onClick={() => {
-                        setMenuAnchor(null);
-                        setIsDeleteDialogOpen(true);
-                    }}
-                    sx={{ color: 'error.main' }}
-                >
-                    <ListItemIcon sx={{ color: 'error.main' }}>
-                        <Trash2 size={18} />
-                    </ListItemIcon>
-                    <ListItemText primary="Delete task" />
-                </MenuItem>
-            </Menu>
             <Dialog
                 open={isDeleteDialogOpen}
                 onClose={() => setIsDeleteDialogOpen(false)}
@@ -311,6 +273,7 @@ const TaskItem = ({ task, isHovered, onMouseEnter, onMouseLeave, onEditClick }) 
                     </Button>
                 </DialogActions>
             </Dialog>
+
         </Box>
     );
 };
