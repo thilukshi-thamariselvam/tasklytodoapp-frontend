@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
     Box, Typography, Divider, Chip, IconButton, CircularProgress, Paper, Checkbox
 } from '@mui/material';
-import { ArrowLeft, CalendarDays, Clock, Edit } from 'lucide-react';
+import { ArrowLeft, CalendarDays, Clock, Edit, Paperclip, Download } from 'lucide-react';
 import { useTaskById } from '../hooks/useTasks';
 import { useUpdateTask } from '../hooks/useTaskMutations';
 
@@ -119,6 +119,35 @@ const TaskDetailPage = () => {
                     <Typography variant="body2" sx={{ mb: 4, color: 'text.disabled', fontStyle: 'italic' }}>
                         No description provided.
                     </Typography>
+                )}
+
+                {task.attachmentUrl && (
+                    <Box sx={{
+                        mb: 3, p: 1.5,
+                        bgcolor: 'grey.50',
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        borderRadius: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1.5
+                    }}>
+                        <Paperclip size={18} sx={{ color: 'text.secondary' }} />
+                        <Typography variant="body2" sx={{ flex: 1, color: 'text.primary' }}>
+                            {task.attachmentUrl.split('/').pop()} {/* Extracts just the filename */}
+                        </Typography>
+                        <a
+                            href={task.attachmentUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            download
+                            style={{ textDecoration: 'none', color: 'inherit' }}
+                        >
+                            <IconButton size="small" sx={{ color: 'primary.main' }}>
+                                <Download size={18} />
+                            </IconButton>
+                        </a>
+                    </Box>
                 )}
 
                 <Divider sx={{ mb: 3 }} />

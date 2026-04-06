@@ -31,3 +31,13 @@ export const completeTask = (taskId) => axiosInstance.patch(`/tasks/${taskId}/co
 export const getTaskById = (taskId) => axiosInstance.get(`/tasks/${taskId}`);
 
 export const searchTasks = (userId, query) => axiosInstance.get(`/tasks/search?userId=${userId}&query=${query}`);
+
+export const updateTaskAttachment = (taskId, file) => {
+    const formData = new FormData();
+    formData.append('file', file); 
+    return axiosInstance.patch(`/tasks/${taskId}/attachment`, formData, {
+        headers: { 
+            'Content-Type': 'multipart/form-data' 
+        }
+    });
+};

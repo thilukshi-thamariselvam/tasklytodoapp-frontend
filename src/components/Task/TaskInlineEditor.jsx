@@ -1,18 +1,34 @@
 import {
     Box, TextField, Button, Chip, IconButton, Typography
 } from '@mui/material';
-import { X, CalendarDays, Plus } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { X, CalendarDays, Plus, Paperclip } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useFormik } from 'formik';
 import { useUpdateTask } from '../../hooks/useTaskMutations';
+import { updateTaskAttachment } from '../../api/taskApi';
 import PriorityPopover from '../Priority/PriorityPopover';
 import DatePickerPopover from '../Date/DatePickerPopover';
 import { useLabels } from '../../hooks/useLabels';
 
 const TaskInlineEditor = ({ task, onCancel }) => {
+    const queryClient = useQueryClient();
     const updateTaskMutation = useUpdateTask();
     const [subtaskInput, setSubtaskInput] = useState('');
     const { data: labels = [] } = useLabels("1");
+
+    const [selectedFile, setSelectedFile] = useState(null);
+    const fileInputRef = useRef(null);
+
+    const handleFileChange = (event) => {
+        if (event.target.files && event.target.files[0]) {
+            setSelectedFile(event.target.files[0]);
+        }
+    };
+    const handleRemoveFile = () => {
+        setSelectedFile(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+    };
 
     const formik = useFormik({
         initialValues: {
@@ -26,6 +42,11 @@ const TaskInlineEditor = ({ task, onCancel }) => {
         onSubmit: async (values, { setSubmitting }) => {
             try {
                 await updateTaskMutation.mutateAsync({ taskId: task.id, data: values });
+                if (selectedFile) {
+                    const fileResponse = await updateTaskAttachment(task.id, selectedFile);
+                    queryClient.setQueryData(['task', task.id], fileResponse.data.data);
+                }
+                queryClient.invalidateQueries({ queryKey: ['tasks'] });
                 onCancel();
             } catch (error) {
                 console.error("Failed to update task", error);
@@ -89,12 +110,38 @@ const TaskInlineEditor = ({ task, onCancel }) => {
                     onChange={(val) => formik.setFieldValue('dueDate', val)}
                 />
 
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    style={{ display: 'none' }}
+                    onChange={handleFileChange}
+                />
+                <Button
+                    size="small"
+                    startIcon={<Paperclip size={16} />}
+                    sx={{ textTransform: 'none', color: 'text.secondary', fontSize: '0.8rem' }}
+                    onClick={() => fileInputRef.current.click()}
+                >
+                    {task.attachmentUrl ? "Replace" : "Attach"}
+                </Button>
+
                 <PriorityPopover
                     value={formik.values.priority}
                     onChange={(val) => formik.setFieldValue('priority', val)}
                 />
                 <Button size="small" sx={{ textTransform: 'none', color: 'text.secondary', fontSize: '0.8rem' }}>Reminders</Button>
             </Box>
+
+            {(selectedFile || task.attachmentUrl) && (
+                <Chip
+                    label={selectedFile ? selectedFile.name : task.attachmentUrl.split('/').pop()}
+                    size="small"
+                    onDelete={selectedFile ? handleRemoveFile : undefined} 
+                    deleteIcon={<X size={14} />}
+                    icon={<Paperclip size={14} />}
+                    sx={{ mt: 1, fontSize: '0.8rem' }}
+                />
+            )}
 
             {labels.length > 0 && (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
@@ -180,7 +227,7 @@ const TaskInlineEditor = ({ task, onCancel }) => {
                     <Button
                         variant="contained"
                         onClick={formik.handleSubmit}
-                        disabled={!formik.dirty || updateTaskMutation.isPending}
+                        disabled={(!formik.dirty && !selectedFile) || updateTaskMutation.isPending}
                         loading={updateTaskMutation.isPending}
                         sx={{ textTransform: 'none' }}
                     >
