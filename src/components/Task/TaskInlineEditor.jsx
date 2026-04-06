@@ -73,13 +73,12 @@ const TaskInlineEditor = ({ task, onCancel }) => {
     return (
         <Box
             sx={{
-                p: 2,
-                m: 0.5,
-                borderRadius: 2,
+                p: 1.5,
+                m: 0.25,
+                borderRadius: 1.5,
                 border: '1px solid',
-                borderColor: 'divider',
-                backgroundColor: '#FFFFFF',
-                boxShadow: 2,
+                borderColor: 'primary.light',
+                backgroundColor: '#FAFBFF',
             }}
         >
             <TextField
@@ -88,7 +87,10 @@ const TaskInlineEditor = ({ task, onCancel }) => {
                 name="title"
                 value={formik.values.title}
                 onChange={formik.handleChange}
-                InputProps={{ disableUnderline: true, sx: { fontSize: '1rem', fontWeight: 500 } }}
+                InputProps={{
+                    disableUnderline: true,
+                    sx: { fontSize: '1rem', fontWeight: 500 }
+                }}
                 autoFocus
             />
 
@@ -101,10 +103,14 @@ const TaskInlineEditor = ({ task, onCancel }) => {
                 onChange={formik.handleChange}
                 multiline
                 rows={1}
-                InputProps={{ disableUnderline: true, sx: { fontSize: '0.85rem', color: 'text.secondary', mt: 1 } }}
+                InputProps={{
+                    disableUnderline: true,
+                    sx: { fontSize: '0.85rem', color: 'text.secondary', mt: 0.5 }
+                }}
             />
 
-            <Box sx={{ display: 'flex', gap: 1, mt: 2, alignItems: 'center' }}>
+            {/* Tighter Action Buttons Row */}
+            <Box sx={{ display: 'flex', gap: 0.5, mt: 1.5, alignItems: 'center' }}>
                 <DatePickerPopover
                     value={formik.values.dueDate}
                     onChange={(val) => formik.setFieldValue('dueDate', val)}
@@ -118,8 +124,14 @@ const TaskInlineEditor = ({ task, onCancel }) => {
                 />
                 <Button
                     size="small"
-                    startIcon={<Paperclip size={16} />}
-                    sx={{ textTransform: 'none', color: 'text.secondary', fontSize: '0.8rem' }}
+                    startIcon={<Paperclip size={14} />}
+                    sx={{
+                        textTransform: 'none',
+                        color: 'text.secondary',
+                        fontSize: '0.75rem',
+                        minWidth: 0, // Prevents awkward button stretching
+                        px: 1.5
+                    }}
                     onClick={() => fileInputRef.current.click()}
                 >
                     {task.attachmentUrl ? "Replace" : "Attach"}
@@ -129,22 +141,25 @@ const TaskInlineEditor = ({ task, onCancel }) => {
                     value={formik.values.priority}
                     onChange={(val) => formik.setFieldValue('priority', val)}
                 />
-                <Button size="small" sx={{ textTransform: 'none', color: 'text.secondary', fontSize: '0.8rem' }}>Reminders</Button>
+
+                <Button size="small" sx={{ textTransform: 'none', color: 'text.secondary', fontSize: '0.75rem', minWidth: 0, px: 1.5 }}>Reminders</Button>
             </Box>
 
+            {/* Attachment Chip */}
             {(selectedFile || task.attachmentUrl) && (
                 <Chip
                     label={selectedFile ? selectedFile.name : task.attachmentUrl.split('/').pop()}
                     size="small"
-                    onDelete={selectedFile ? handleRemoveFile : undefined} 
+                    onDelete={selectedFile ? handleRemoveFile : undefined}
                     deleteIcon={<X size={14} />}
                     icon={<Paperclip size={14} />}
-                    sx={{ mt: 1, fontSize: '0.8rem' }}
+                    sx={{ mt: 1, fontSize: '0.75rem' }}
                 />
             )}
 
+            {/* Labels Section */}
             {labels.length > 0 && (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1.5 }}>
                     {labels.map((label) => {
                         const isSelected = formik.values.labelIds?.includes(label.id);
                         return (
@@ -178,8 +193,9 @@ const TaskInlineEditor = ({ task, onCancel }) => {
                 </Box>
             )}
 
-            <Box sx={{ mt: 1.5 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            {/* Subtasks Section */}
+            <Box sx={{ mt: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <TextField
                         size="small"
                         placeholder="Add subtask"
@@ -196,11 +212,11 @@ const TaskInlineEditor = ({ task, onCancel }) => {
                         sx={{ flex: 1 }}
                     />
                     <IconButton size="small" onClick={handleAddSubtask} disabled={!subtaskInput.trim()} sx={{ color: 'text.secondary' }}>
-                        <Plus size={18} />
+                        <Plus size={16} />
                     </IconButton>
                 </Box>
                 {formik.values.subtaskTitles.length > 0 && (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1 }}>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 0.5 }}>
                         {formik.values.subtaskTitles.map((subtask, index) => (
                             <Chip
                                 key={index}
@@ -208,20 +224,20 @@ const TaskInlineEditor = ({ task, onCancel }) => {
                                 size="small"
                                 onDelete={() => handleRemoveSubtask(index)}
                                 deleteIcon={<X size={14} />}
-                                sx={{ fontSize: '0.8rem', bgcolor: 'action.hover', '& .MuiChip-deleteIcon': { color: 'text.secondary' } }}
+                                sx={{ fontSize: '0.75rem', bgcolor: 'action.hover', '& .MuiChip-deleteIcon': { color: 'text.secondary' } }}
                             />
                         ))}
                     </Box>
                 )}
             </Box>
 
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2, pt: 1, borderTop: '1px solid', borderColor: 'divider' }}>
-                <Button size="small" sx={{ textTransform: 'none', color: 'text.secondary' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1.5, pt: 1, borderTop: '1px solid', borderColor: 'divider' }}>
+                <Button size="small" sx={{ textTransform: 'none', color: 'text.secondary', fontSize: '0.8rem' }}>
                     Inbox ▾
                 </Button>
 
                 <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Button onClick={onCancel} sx={{ textTransform: 'none', color: 'text.secondary' }}>
+                    <Button onClick={onCancel} sx={{ textTransform: 'none', color: 'text.secondary', fontSize: '0.8rem' }}>
                         Cancel
                     </Button>
                     <Button
@@ -229,7 +245,7 @@ const TaskInlineEditor = ({ task, onCancel }) => {
                         onClick={formik.handleSubmit}
                         disabled={(!formik.dirty && !selectedFile) || updateTaskMutation.isPending}
                         loading={updateTaskMutation.isPending}
-                        sx={{ textTransform: 'none' }}
+                        sx={{ textTransform: 'none', fontSize: '0.8rem', px: 2 }}
                     >
                         Save
                     </Button>
