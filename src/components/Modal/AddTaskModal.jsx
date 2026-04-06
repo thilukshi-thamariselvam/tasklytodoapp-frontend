@@ -1,19 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFormik } from 'formik';
 import { useQueryClient } from '@tanstack/react-query';
 import {
     Dialog, DialogContent, Box, TextField, IconButton,
-    Button, Menu, MenuItem, ListItemIcon, ListItemText, Divider, Typography, Chip
+    Button, Menu, MenuItem, ListItemIcon, ListItemText, Divider, Chip
 } from '@mui/material';
 import {
     Mic, MoreHorizontal, CalendarDays, Paperclip, Flag, Bell,
-    AtSign, MapPin, Puzzle, Settings, Plus, X
+    AtSign, MapPin, Puzzle, Plus, X
 } from 'lucide-react';
 import { closeAddTaskModal } from '../../store/slices/uiSlice';
 import { useLabels } from '../../hooks/useLabels';
 import { taskSchema } from '../../validation/taskSchema';
-import { createTask } from '../../api/taskApi';
+import { createTask, createTaskWithFile } from '../../api/taskApi';
 import DatePickerPopover from '../Date/DatePickerPopover';
 import PriorityPopover from '../Priority/PriorityPopover';
 
@@ -24,6 +24,9 @@ const AddTaskModal = () => {
 
     const [anchorEl, setAnchorEl] = useState(null);
     const [subtaskInput, setSubtaskInput] = useState('');
+    const [selectedFile, setSelectedFile] = useState(null);
+    const fileInputRef = useRef(null);
+
     const { data: labels = [] } = useLabels("1");
 
     const formik = useFormik({
@@ -35,14 +38,20 @@ const AddTaskModal = () => {
             labelIds: [],
         },
         validationSchema: taskSchema,
-        onSubmit: async (values, { setSubmitting }) => {
+        onSubmit: async (values, { setSubmitting, resetForm }) => {
             try {
                 const payload = { ...values, userId: "1", labelIds: values.labelIds };
-                await createTask(payload);
-                queryClient.invalidateQueries({ queryKey: ['tasks'] });
 
+                if (selectedFile) {
+                    await createTaskWithFile(payload, selectedFile);
+                } else {
+                    await createTask(payload);
+                }
+
+                queryClient.invalidateQueries({ queryKey: ['tasks'] });
                 dispatch(closeAddTaskModal());
-                formik.resetForm();
+                resetForm();
+                setSelectedFile(null); 
             } catch (error) {
                 console.error("Failed to create task:", error);
             } finally {
@@ -50,6 +59,19 @@ const AddTaskModal = () => {
             }
         },
     });
+
+    const handleFileChange = (event) => {
+        if (event.target.files && event.target.files[0]) {
+            setSelectedFile(event.target.files[0]);
+        }
+    };
+
+    const handleRemoveFile = () => {
+        setSelectedFile(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
+    };
 
     const handleAddSubtask = () => {
         const trimmed = subtaskInput.trim();
@@ -78,6 +100,7 @@ const AddTaskModal = () => {
     const handleClose = () => {
         dispatch(closeAddTaskModal());
         formik.resetForm();
+        setSelectedFile(null);
     };
 
     return (
@@ -198,13 +221,31 @@ const AddTaskModal = () => {
                     </Box>
                 )}
 
-
                 <Box sx={{ display: 'flex', gap: 1, mt: 2, mb: 1 }}>
                     <DatePickerPopover
                         value={formik.values.dueDate}
                         onChange={(val) => formik.setFieldValue('dueDate', val)}
                     />
-                    <Button size="small" startIcon={<Paperclip size={16} />} variant="outlined" sx={{ textTransform: 'none' }}>Attachment</Button>
+                    
+                    {/* Hidden File Input */}
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        style={{ display: 'none' }}
+                        onChange={handleFileChange}
+                    />
+                    
+                    {/* Attachment Button */}
+                    <Button 
+                        size="small" 
+                        startIcon={<Paperclip size={16} />} 
+                        variant="outlined" 
+                        sx={{ textTransform: 'none' }}
+                        onClick={() => fileInputRef.current.click()}
+                    >
+                        Attachment
+                    </Button>
+
                     <PriorityPopover
                         value={formik.values.priority}
                         onChange={(val) => formik.setFieldValue('priority', val)}
@@ -220,6 +261,18 @@ const AddTaskModal = () => {
                         <MoreHorizontal size={18} />
                     </IconButton>
                 </Box>
+
+                {/* Show selected file name */}
+                {selectedFile && (
+                    <Chip
+                        label={selectedFile.name}
+                        size="small"
+                        onDelete={handleRemoveFile}
+                        deleteIcon={<X size={14} />}
+                        icon={<Paperclip size={14} />}
+                        sx={{ mt: 1, fontSize: '0.8rem' }}
+                    />
+                )}
 
                 <Menu
                     anchorEl={anchorEl}
